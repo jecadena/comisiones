@@ -1,0 +1,201 @@
+<div class="row border-bottom bg-body-secondary">
+  <div class="col-md-8 pt-2">
+    <form *ngIf="isAdmin" class="d-inline-flex align-items-center mb-1 w-100">
+      <label class="me-2 fw-bold text-primary">Fee:</label>
+      <input type="text" class="form-control form-control-sm me-3 bg-info-subtle fw-bold" [value]="sumatoriaFee" readonly name="sumatoriaFee" style="width: 50%;">
+      
+      <label class="me-2">Tip.Documento:</label>
+      <select class="form-select form-select-sm me-3 bg-info-subtle" [(ngModel)]="tipdoc" name="tipdoc" style="width: 100%;">
+        <option *ngFor="let tipo of tiposDocumento" [value]="tipo">{{ tipo }}</option>
+      </select>
+  
+      <label class="me-2">Serie:</label>
+      <input type="text" class="form-control form-control-sm me-3 bg-info-subtle" [(ngModel)]="serie" name="serie" style="width: 100%;">
+      
+      <label class="me-2">Número:</label>
+      <input type="text" class="form-control form-control-sm bg-info-subtle" [(ngModel)]="numero" name="numero" style="width: 100%;">
+    </form>    
+  </div>
+<div class="col-md-2 pt-2">
+  <button class="btn btn-sm btn-success" (click)="exportarExcelFiltrado()">
+    <i class="fa-regular fa-file-excel"></i> 
+    {{ isFiltering ? 'EXPORTAR NUEVOS' : 'EXPORTAR TODOS' }}
+  </button>
+</div>
+
+  <div class="col-md-2 pt-2 text-right">
+    <h5 class="text-end w-100">Cobradas: {{ countCobradas }}</h5>
+  </div>
+</div>
+<div class="row mt-1">
+  <div class="col-md-10 mt-2">
+    <form class="d-flex justify-content-start align-items-left">
+      <span class="text-secondary pe-3 border-end border-dark-subtle">
+        <i class="fa-regular fa-money-bill-1"></i> TOTAL RECIBIDO: $ {{ sumatoriaComisionTotalReal | number:'1.2-2' }}
+      </span>
+      <span class="text-secondary ms-3 pe-3 border-end border-dark-subtle">
+        <i class="fa-solid fa-hand-holding-dollar"></i> GBA I.: $ {{ sumatoriaGbaI | number:'1.2-2' }}
+      </span>
+      <span class="text-secondary ms-3 pe-3 border-end border-dark-subtle">
+        <i class="fa-solid fa-hand-holding-dollar"></i> GBA L.: $ {{ sumatoriaGbaL | number:'1.2-2' }}
+      </span>
+      <span class="text-primary ms-3 pe-3 border-end border-dark-subtle">
+        <i class="fa-solid fa-file-invoice-dollar"></i> A FACTURAR: 
+        <strong>$ {{ (sumatoriaComisionTotalReal - sumatoriaGbaI) | number:'1.2-2' }}</strong>
+      </span>
+    </form>
+  </div>
+  <div class="col-md-2 text-right pe-0 mb-1">
+    <div class="row">
+      <div class="col-md-12 mb-2">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Buscar verificación..." [(ngModel)]="busqueda" (keyup)="onKeyUp()">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-2 bg-secondary-subtle pt-1 pb-1">
+    <button class="btn btn-sm" [ngClass]="{ 'btn-primary': isFiltering, 'btn-danger': !isFiltering }" (click)="toggleFilter()">
+      <i class="fa" [ngClass]="{ 'fa-solid fa-layer-group': isFiltering, 'fa-solid fa-circle-plus': !isFiltering }"></i>
+      {{ isFiltering ? 'VER TODOS' : 'VER NUEVOS' }}
+    </button>
+  </div>
+  <div class="col-md-2 pt-1 bg-secondary-subtle pt-1 pb-1">
+    Cantidad: <strong>{{ filteredCount }}</strong>
+  </div>
+  <div class="col-md-4 bg-body-secondary pt-1 pb-1">
+    <div *ngIf="isAdmin" class="input-group"><span class="pt-1 pe-1">VENDEDOR:</span>
+      <select class="form-control form-control-sm" id="vendedor" name="vendedor" [(ngModel)]="comision.de_vendedor" [hidden]="mostrarCampoTextoVendedor">
+        <option *ngFor="let vendedor of vendedores" [value]="vendedor">{{ vendedor }}</option>
+      </select>
+      <input *ngIf="mostrarCampoTextoVendedor" type="text" class="form-control" id="vendedorText" name="vendedor" [(ngModel)]="comision.de_vendedor" placeholder="Ingrese nuevo vendedor">
+      <div class="input-group-append">
+        <button type="button" class="btn btn-outline-secondary ml-2 btn-sm" (click)="toggleCampoVendedor()">
+          {{ mostrarCampoTextoVendedor ? 'CANCELAR' : 'NUEVA' }}
+        </button>
+      </div>
+      <div class="input-group-append">
+        <button type="button" class="btn btn-primary btn-sm ml-2" (click)="actualizarVendedoresSeleccionados()">
+          ASIGNAR VENDEDOR
+        </button>        
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4 bg-secondary-subtle pt-1 pb-1">
+    <div class="input-group">
+      <span class="pt-1 pe-1">Vendedor: </span>
+      <select class="form-control form-control-sm" id="exportarComisiones" name="exportarComisiones" [(ngModel)]="selectedVendedor">
+        <option *ngFor="let vendedor of vendedoresUnicos" [value]="vendedor">{{ vendedor }}</option>
+      </select>
+      <div class="input-group-append">
+        <button type="button" class="btn btn-success btn-sm ml-2" (click)="exportarExcel()">
+          EXPORTAR
+        </button>
+      </div>
+    </div>
+  </div>  
+</div>
+<div class="container mt-1 ps-0">
+  <div *ngIf="errorLoadingComisiones" class="alert alert-danger">
+    {{ errorLoadingComisiones }}
+  </div> 
+  <div *ngIf="filteredComisionesList.length === 0 && !errorLoadingComisiones" class="alert alert-warning">
+    No hay registros disponibles.
+  </div>
+  <table *ngIf="filteredComisionesList.length > 0" class="table table-sm table-bordered">
+    <thead class="table-primary">
+      <tr>
+        <th *ngIf="isAdmin">
+          <input type="checkbox" (change)="toggleAll($event)" />
+        </th>
+        <th *ngIf="isAdmin" class="text-center" style="width:1%"></th>
+        <th class="text-center" style="width: 20%;">
+          <div class="header-content">
+            <span>Hotel</span>
+            <div class="sort-icons">
+              <i (click)="sort('HotelName', 'asc')" class="fa-solid fa-sort-up" [ngClass]="{'text-primario': sortColumn === 'HotelName' && sortDirection === 'asc', 'text-secondario': sortColumn !== 'HotelName' || sortDirection !== 'asc'}"></i>
+              <i (click)="sort('HotelName', 'desc')" class="fa-solid fa-sort-down" [ngClass]="{'text-primario': sortColumn === 'HotelName' && sortDirection === 'desc', 'text-secondario': sortColumn !== 'HotelName' || sortDirection !== 'desc'}"></i>
+            </div>
+          </div>
+        </th>
+        <th class="text-center" style="width: 14%;">
+          <div class="header-content">
+            <span>Pasajero</span>
+            <div class="sort-icons">
+              <i (click)="sort('GuestLastName', 'asc')" class="fa-solid fa-sort-up" [ngClass]="{'text-primario': sortColumn === 'GuestLastName' && sortDirection === 'asc', 'text-secondario': sortColumn !== 'GuestLastName' || sortDirection !== 'asc'}"></i>
+              <i (click)="sort('GuestLastName', 'desc')" class="fa-solid fa-sort-down" [ngClass]="{'text-primario': sortColumn === 'GuestLastName' && sortDirection === 'desc', 'text-secondario': sortColumn !== 'GuestLastName' || sortDirection !== 'desc'}"></i>
+            </div>
+          </div>
+        </th>
+        <th class="text-center" style="width: 12%;">
+          <div class="header-content">
+            <span>Vendedor</span>
+            <div class="sort-icons">
+              <i (click)="sort('de_vendedor', 'asc')" class="fa-solid fa-sort-up" [ngClass]="{'text-primario': sortColumn === 'de_vendedor' && sortDirection === 'asc', 'text-secondario': sortColumn !== 'de_vendedor' || sortDirection !== 'asc'}"></i>
+              <i (click)="sort('de_vendedor', 'desc')" class="fa-solid fa-sort-down" [ngClass]="{'text-primario': sortColumn === 'de_vendedor' && sortDirection === 'desc', 'text-secondario': sortColumn !== 'de_vendedor' || sortDirection !== 'desc'}"></i>
+            </div>
+          </div>
+        </th>
+        <th class="text-center" style="width: 4%">
+          <div class="header-content">
+            <span>Sign</span>
+            <div class="sort-icons">
+              <i (click)="sort('SignIn', 'asc')" class="fa-solid fa-sort-up" [ngClass]="{'text-primario': sortColumn === 'SignIn' && sortDirection === 'asc', 'text-secondario': sortColumn !== 'SignIn' || sortDirection !== 'asc'}"></i>
+              <i (click)="sort('SignIn', 'desc')" class="fa-solid fa-sort-down" [ngClass]="{'text-primario': sortColumn === 'SignIn' && sortDirection === 'desc', 'text-secondario': sortColumn !== 'SignIn' || sortDirection !== 'desc'}"></i>
+            </div>
+          </div>
+        </th>
+        <th class="text-center" style="width: 8%;">Cod</th>
+        <th class="text-center" style="width: 8%;">Amadeus</th>
+        <th class="text-center" style="width: 8%;">Recibido</th>
+        <th class="text-center" style="width: 8%;">Fee</th>
+        <th class="text-center" style="width: 8%;">Banco</th>
+        <th class="text-center" style="width: 9%;">Distribuir</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let hotel of filteredComisionesList">
+        <td *ngIf="isAdmin">
+          <input type="checkbox" [(ngModel)]="hotel.selected" (change)="toggleHotel(hotel, $event)" name="{{ hotel.id }}" id="{{ hotel.id }}"/>
+        </td>
+        <td *ngIf="isAdmin">
+          <a class="cursor-pointer text-dark" [routerLink]="['/comisiones/editar', hotel.id]" matTooltip="Editar" matTooltipPosition="left">
+            <i-tabler name="edit" class="icon-18">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"></svg>
+            </i-tabler>
+          </a>
+        </td>
+        <td><span style="font-size: 0.8em;">{{ hotel.HotelName }}</span></td>
+        <td><span style="font-size: 0.8em;">{{ hotel.GuestLastName }} {{ hotel.GuestFirstName }}</span>
+          <a *ngIf="!hotel.GuestFirstName" class="cursor-pointer text-info" [routerLink]="['/comisiones/editar', hotel.id]" matTooltip="CORREGIR NOMBRE" matTooltipPosition="right">
+            <i-tabler name="alert-triangle" class="icon-18">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 2L2 22h20L12 2zm0 13v2m0-6v4"/>
+              </svg>
+            </i-tabler>
+          </a>
+        </td>
+        <td><span style="font-size: 0.8em;">{{ hotel.de_vendedor }}</span></td>
+        <td class="text-center"><span style="font-size: 0.8em;">{{ hotel.SignIn || '--' }}</span></td>
+        <td class="text-center"><span class="d-block bg-light-primary text-success rounded f-w-600 p-6 p-y-4 f-s-12 ng-star-inserted">{{ hotel.ConfirmationCode }}</span></td>
+        <td class="text-right bg-body-secondary text-dark pe-3"><span style="font-size: 0.8em;">{{ hotel.ComisionTotal | number:'1.2-2' }}</span></td>
+        <td class="text-right bg-body-secondary text-dark pe-3"><span style="font-size: 0.8em;">{{ hotel.ComisionTotalReal | number:'1.2-2' }}</span></td>
+        <td class="text-right bg-body-secondary text-dark pe-3"><span style="font-size: 0.8em;">{{ hotel.Fee | number:'1.2-2' }}</span></td>
+        <td class="text-right bg-body-secondary text-dark pe-3"><span style="font-size: 0.8em;">{{ hotel.RecBanco | number:'1.2-2' }}</span></td>
+        <td class="text-right bg-body-secondary text-dark pe-3"><span style="font-size: 0.8em;">{{ hotel.ComisionDistribuir | number:'1.2-2' }}</span></td>
+      </tr>
+      <tr>
+        <td *ngIf="isAdmin" class="text-right"></td>
+        <td *ngIf="isAdmin" class="text-right"></td>
+        <td colspan="5" style="text-align: right;">Total:</td>
+        <td class="text-right bg-dark bg-gradient text-light pe-3"><span style="font-size: 0.8em;">$ <strong>{{ sumatoriaTotalAmadeus | number:'1.2-2' }}</strong></span></td>
+        <td class="text-right bg-dark bg-gradient text-light pe-3"><span style="font-size: 0.8em;">$ <strong>{{ sumatoriaComisionTotalReal | number:'1.2-2' }}</strong></span></td>
+        <td class="text-right bg-dark bg-gradient text-light pe-3"><span style="font-size: 0.8em;">$ <strong>{{ sumatoriaFee | number:'1.2-2' }}</strong></span></td>
+        <td class="text-right bg-dark bg-gradient text-light pe-3"><span style="font-size: 0.8em;">$ <strong>{{ sumatoriaTotalBancos | number:'1.2-2' }}</strong></span></td>
+        <td class="text-right bg-dark bg-gradient text-light pe-3"><span style="font-size: 0.8em;">$ <strong>{{ sumatoriaTotalDistribuidos | number:'1.2-2' }}</strong></span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

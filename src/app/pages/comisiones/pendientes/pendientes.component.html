@@ -1,0 +1,174 @@
+<div class="row">
+  <div class="col-md-3 ps-0">
+    <button *ngIf="isAdmin" (click)="nuevacomision()" class="btn btn-warning me-2">
+      <i class="fa-solid fa-file-circle-plus"></i> CREAR NUEVA COMISIÓN
+    </button>
+  </div>
+  <div class="col-md-2">
+    <button *ngIf="!mostrarComisionesDiferentes && selectedComisiones.length > 0" (click)="exportarDiferenciasAExcel()" class="btn btn-success">
+      <i class="fa-solid fa-file-excel"></i> Exportar a Excel
+    </button>
+  </div>
+  <div class="col-md-5">
+    <input type="text" class="form-control" placeholder="Buscar..." [(ngModel)]="busqueda" (keyup)="onKeyUp()">
+  </div>
+  <div class="col-md-2 text-right pe-2 mt-1">
+    <h5 class="me-1">Pendientes: {{ countPendientes }}</h5>   
+  </div>
+</div>
+<div class="container mt-4 ps-0 me-0 pe-0" style="overflow-x: hidden;">
+  <div *ngIf="errorLoadingComisiones" class="alert alert-danger">
+    {{ errorLoadingComisiones }}
+  </div> 
+  <div *ngIf="comisionesList.length === 0 && !errorLoadingComisiones" class="alert alert-warning">
+    No hay registros disponibles.
+  </div>
+  <!-- Tabla con la lista paginada de comisiones -->
+  <table *ngIf="comisionesList.length > 0" class="table table-sm table-bordered">
+    <thead class="table-primary">
+      <tr>
+        <th *ngIf="isAdmin" class="text-center" style="width: 2%;">
+          <input type="checkbox" (change)="toggleAll($event)">
+        </th>
+        <td class="text-center" style="width: 2%;"></td>
+        <th class="text-center" style="width: 30%;">
+          <div class="header-content">
+            <span>Hotel</span>
+            <div class="sort-icons">
+              <i (click)="sort('HotelName', 'asc')" class="fa-solid fa-sort-up" [ngClass]="{'text-primario': sortColumn === 'HotelName' && sortDirection === 'asc', 'text-secondario': sortColumn !== 'HotelName' || sortDirection !== 'asc'}"></i>
+              <i (click)="sort('HotelName', 'desc')" class="fa-solid fa-sort-down" [ngClass]="{'text-primario': sortColumn === 'HotelName' && sortDirection === 'desc', 'text-secondario': sortColumn !== 'HotelName' || sortDirection !== 'desc'}"></i>
+            </div>
+          </div>
+        </th>
+        <th class="text-center" style="width: 25%;">
+          <div class="header-content">
+            <span>Pasajero</span>
+            <div class="sort-icons">
+              <i (click)="sort('GuestLastName', 'asc')" class="fa-solid fa-sort-up" [ngClass]="{'text-primario': sortColumn === 'GuestLastName' && sortDirection === 'asc', 'text-secondario': sortColumn !== 'GuestLastName' || sortDirection !== 'asc'}"></i>
+              <i (click)="sort('GuestLastName', 'desc')" class="fa-solid fa-sort-down" [ngClass]="{'text-primario': sortColumn === 'GuestLastName' && sortDirection === 'desc', 'text-secondario': sortColumn !== 'GuestLastName' || sortDirection !== 'desc'}"></i>
+            </div>
+          </div>
+        </th>
+        <th class="text-center" style="width: 5%;">Cod</th>
+        <th class="text-center" style="width: 12%;">
+          <div class="header-content">
+            <span>Ciudad</span>
+            <div class="sort-icons">
+              <i (click)="sort('CityName', 'asc')" class="fa-solid fa-sort-up" [ngClass]="{'text-primario': sortColumn === 'CityName' && sortDirection === 'asc', 'text-secondario': sortColumn !== 'CityName' || sortDirection !== 'asc'}"></i>
+              <i (click)="sort('CityName', 'desc')" class="fa-solid fa-sort-down" [ngClass]="{'text-primario': sortColumn === 'CityName' && sortDirection === 'desc', 'text-secondario': sortColumn !== 'CityName' || sortDirection !== 'desc'}"></i>
+            </div>
+          </div>
+        </th>
+        <th class="text-center" style="width: 7%;">
+          <div class="header-content">
+            <span>Entrada</span>
+            <div class="sort-icons">
+              <i (click)="sort('CheckInDate', 'asc')" class="fa-solid fa-sort-up" [ngClass]="{'text-primario': sortColumn === 'CheckInDate' && sortDirection === 'asc', 'text-secondario': sortColumn !== 'CheckInDate' || sortDirection !== 'asc'}"></i>
+              <i (click)="sort('CheckInDate', 'desc')" class="fa-solid fa-sort-down" [ngClass]="{'text-primario': sortColumn === 'CheckInDate' && sortDirection === 'desc', 'text-secondario': sortColumn !== 'CheckInDate' || sortDirection !== 'desc'}"></i>
+            </div>
+          </div>
+        </th>
+        <th class="text-center" style="width: 7%;">
+          <div class="header-content">
+            <span>Salida</span>
+            <div class="sort-icons">
+              <i (click)="sort('CheckOutDate', 'asc')" class="fa-solid fa-sort-up" [ngClass]="{'text-primario': sortColumn === 'CheckOutDate' && sortDirection === 'asc', 'text-secondario': sortColumn !== 'CheckOutDate' || sortDirection !== 'asc'}"></i>
+              <i (click)="sort('CheckOutDate', 'desc')" class="fa-solid fa-sort-down" [ngClass]="{'text-primario': sortColumn === 'CheckOutDate' && sortDirection === 'desc', 'text-secondario': sortColumn !== 'CheckOutDate' || sortDirection !== 'desc'}"></i>
+            </div>
+          </div>
+        </th>
+        <th class="text-center" style="width: 3%;">
+          <div class="header-content">
+            <span>Sign</span>
+            <div class="sort-icons">
+              <i (click)="sort('SignIn', 'asc')" class="fa-solid fa-sort-up" [ngClass]="{'text-primario': sortColumn === 'SignIn' && sortDirection === 'asc', 'text-secondario': sortColumn !== 'SignIn' || sortDirection !== 'asc'}"></i>
+              <i (click)="sort('SignIn', 'desc')" class="fa-solid fa-sort-down" [ngClass]="{'text-primario': sortColumn === 'SignIn' && sortDirection === 'desc', 'text-secondario': sortColumn !== 'SignIn' || sortDirection !== 'desc'}"></i>
+            </div>
+          </div>
+        </th>
+        <th class="text-center" style="width: 7%;">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let hotel of paginatedComisionesList">
+        <td *ngIf="isAdmin" class="text-center">
+          <input type="checkbox" [(ngModel)]="hotel.selected" (change)="onCheckboxChange($event)">
+        </td>
+        <td class="text-center">
+          <a class="m-r-10 cursor-pointer text-dark" 
+            [routerLink]="['/comisiones/editar', hotel.id]"
+            [queryParams]="{ returnUrl: currentRoute }"
+            matTooltip="Editar" 
+            matTooltipPosition="left">
+            <i-tabler name="edit" class="icon-18">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <!-- Icono de editar -->
+              </svg>
+            </i-tabler>
+          </a>
+        </td>
+        <td class="col-lg-3">
+          <span style="font-size: 0.8em;">{{ hotel.HotelName }}</span>
+        </td>
+        <td>
+          <span style="font-size: 0.8em;">{{ hotel.GuestLastName }} {{ hotel.GuestFirstName }}</span>
+        </td>
+        <td class="text-center">
+          <span class="bg-light-primary text-primary rounded f-w-600 p-6 p-y-4 f-s-12 ng-star-inserted">{{ hotel.ConfirmationCode }}</span>
+        </td>
+        <td>
+          <span style="font-size: 0.8em;">{{ hotel.CityName }}</span>
+        </td>
+        <td>
+          <span style="font-size: 0.8em;">{{ formatDate(hotel.CheckInDate) }}</span>
+        </td>
+        <td>
+          <span style="font-size: 0.8em;">{{ formatDate(hotel.CheckOutDate) }}</span>
+        </td>
+        <td>
+          <span style="font-size: 0.8em;">{{ hotel.SignIn }}</span>
+        </td>
+        <td class="text-right">
+          <span style="font-size: 0.8em;">{{ hotel.ComisionTotal | number:'1.2-2' }}</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <!-- Paginación -->
+  <div class="row">
+    <div class="col-md-12 text-center">
+      <nav aria-label="Comisiones Pagination">
+        <ul class="pagination justify-content-center">
+          <!-- Primera página -->
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <button class="page-link" (click)="goToFirstPage()" [disabled]="currentPage === 1">
+              <i class="fa fa-angle-double-left"></i>
+            </button>
+          </li>
+          <!-- Página anterior -->
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <button class="page-link" (click)="goToPreviousPage()" [disabled]="currentPage === 1">
+              <i class="fa fa-angle-left"></i>
+            </button>
+          </li>
+          <!-- Página actual -->
+          <li class="page-item disabled">
+            <span class="page-link">Página: {{ currentPage }} / {{ totalPages }}</span>
+          </li>
+          <!-- Página siguiente -->
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <button class="page-link" (click)="goToNextPage()" [disabled]="currentPage === totalPages">
+              <i class="fa fa-angle-right"></i>
+            </button>
+          </li>
+          <!-- Última página -->
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <button class="page-link" (click)="goToLastPage()" [disabled]="currentPage === totalPages">
+              <i class="fa fa-angle-double-right"></i>
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>

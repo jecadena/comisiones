@@ -1,0 +1,48 @@
+<div class="row">
+    <div class="col-md-3">
+      <h5 class="text-accent">Recibos: <strong>{{ countRecibos }}</strong></h5>
+    </div>
+    <div class="col-md-5">
+      <button *ngIf="showCreateReceiptButton" class="btn btn-primary" (click)="generarReciboMultiple()">Crear Recibo Múltiple</button>
+    </div>
+    <div class="col-md-4">
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="Buscar verificación..." [(ngModel)]="busqueda" (keyup)="onKeyUp()">
+      </div>
+    </div>
+  </div>
+  <div class="container mt-4">
+    <div *ngIf="errorLoadingComisiones" class="alert alert-danger">
+      {{ errorLoadingComisiones }}
+    </div> 
+      <table class="table table-sm">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Factura</th>
+            <th>Num. Recibo</th>
+            <th>Fecha</th>
+            <th>Hotel</th>
+            <th>Comisión</th>
+            <th>Cuenta</th>
+            <th>Moneda</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let hotel of comisionesListCobradas">
+            <td>
+              <a (click)="verRecibo(hotel.Id)" class="text-primary cursor-pointer" matTooltip="Ver detalles" matTooltipPosition="left">
+                <i class="fa-solid fa-circle-info"></i>
+              </a>
+            </td>
+            <td>{{ hotel.FacSerie }} - {{ hotel.FacNumero }}</td>
+            <td>{{ hotel.RecNumero }}</td>
+            <td>{{ formatDate(hotel.FechaCreacion) }}</td>
+            <td><span class="bg-light-primary text-primary rounded f-w-600 p-6 p-y-4 f-s-12 ng-star-inserted">{{ hotel.nombre }}</span></td>
+            <td>{{ hotel.Monto.toFixed(2) }}</td>
+            <td>{{ hotel.numero }} - {{ hotel.descripcion }}</td>
+            <td>{{ hotel.Moneda }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>

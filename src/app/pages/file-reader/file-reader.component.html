@@ -1,0 +1,14 @@
+<div>
+    <h2>Selecciona archivos de texto</h2>
+    <input type="file" (change)="onFileSelected($event)" multiple accept=".JAN,.FEB,.MAR,.APR,.MAY,.JUN,.JUL,.AUG,.SEP,.OCT,.NOV,.DEC" />
+  </div>
+  
+  <div *ngIf="foundExpressions.length > 0">
+    <h3>Expresiones encontradas:</h3>
+    <ul>
+      <li *ngFor="let found of foundExpressions">
+        <strong>{{ found.fileName }}:</strong> {{ found.expression }}
+      </li>
+    </ul>
+  </div>
+  

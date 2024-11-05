@@ -1,0 +1,19 @@
+<div class="flex-layout">
+  <app-branding></app-branding>
+  <mat-nav-list class="sidebar-list">
+    <ng-container *ngFor="let item of navItems">
+      <ng-container *ngIf="!(countRecibos === 0 && item.displayName === 'Recibos')">
+        <app-nav-item [item]="item">
+          <ng-template #comisionesLink>
+            <a *ngIf="item.displayName !== 'Recibos'" (click)="navigateToComisiones()">
+              {{ item.displayName }}
+            </a>
+            <span *ngIf="item.displayName === 'Recibos'">
+              {{ item.displayName }}
+            </span>
+          </ng-template>
+        </app-nav-item>
+      </ng-container>
+    </ng-container>
+  </mat-nav-list>
+</div>

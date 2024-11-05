@@ -1,0 +1,168 @@
+<div class="row">
+  <div class="col-md-8 ps-0">
+    <button (click)="nuevacomision()" class="btn btn-warning me-2"><i class="fa-solid fa-file-circle-plus"></i> CREAR NUEVA COMISIÓN</button>
+    <button (click)="cobrarComisiones()" class="btn btn-primary" *ngIf="selectedComisiones.length > 0"><i class="fa-solid fa-cash-register"></i> COBRAR COMISIONES</button>
+  </div>
+  <div class="col-md-4">
+    <div class="input-group mb-2">
+      <input type="text" class="form-control" placeholder="Buscar verificación..." [(ngModel)]="busqueda" (keyup)="onKeyUp()">
+      <label class="input-group-text" for="orderSelect">Ordenar por:</label>
+      <select class="form-select" id="orderSelect" [(ngModel)]="selectedOrder" (change)="ordenarComisiones()">
+        <option value="FechaAsc">Fecha Ascendente</option>
+        <option value="FechaDesc">Fecha Descendente</option>
+        <option value="HotelAsc">Hotel Ascendente</option>
+        <option value="HotelDesc">Hotel Descendente</option>
+      </select>
+    </div>
+  </div>
+</div>
+<div class="row mb-2 pt-2 border-bottom pb-2 bg-body-secondary">
+  <div class="col-md-10">
+    <span class="text-secondary pe-3 border-end border-dark-subtle">
+        <i class="fa-regular fa-money-bill-1"></i> TOTAL RECIBIDO: 
+        $ {{ totalComisionReal | number:'1.2-2' }}
+    </span>
+    <span class="text-secondary ms-3 pe-3 border-end border-dark-subtle">
+        <i class="fa-solid fa-hand-holding-dollar"></i> GBA I.: 
+        $ {{ totalGbaI | number:'1.2-2' }}
+    </span>
+    <span class="text-secondary ms-3 pe-3 border-end border-dark-subtle">
+        <i class="fa-solid fa-money-bill-transfer"></i> FEE: 
+        $ {{ totalFee | number:'1.2-2' }}
+    </span>
+    <span class="text-secondary ms-3 pe-3 border-end border-dark-subtle">
+        <i class="fa-solid fa-hand-holding-dollar"></i> GBA L.: 
+        $ {{ totalGbaL | number:'1.2-2' }}
+    </span>
+    <span class="text-primary ms-3 pe-3 border-end border-dark-subtle">
+        <i class="fa-solid fa-file-invoice-dollar"></i> A FACTURAR: 
+        <strong>$ {{ totalFacturar | number:'1.2-2' }}</strong>
+    </span>
+  </div>
+  <div class="col-md-2 text-right pd-2">
+    <h5>Confirmadas: {{ countProceso }}</h5>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-8 mt-1">
+    <form class="d-flex justify-content-start align-items-left">
+      <span class="text-secondary pe-3 border-end border-dark-subtle"><i class="fa-solid fa-globe"></i> TOTAL AMADEUS: $ {{ totalAmadeus | number:'1.2-2' }}</span>
+      <span class="text-secondary ps-3 pe-3 border-end border-dark-subtle"><i class="fa-solid fa-building-columns"></i> TOTAL BANCO: $ {{ totalBanco | number:'1.2-2' }}</span>
+      <span class="text-danger ps-3 pe-3 border-end border-dark-subtle"><i class="fa-solid fa-circle-exclamation"></i> AMADEUS - BANCO: $ <strong>{{ diferenciaAmadeusBanco | number:'1.2-2' }}</strong></span>
+    </form>
+  </div>
+  <div class="col-md-2 text-right">
+    <button *ngIf="mostrarComisionesDiferentes" (click)="exportarDiferenciasAExcel()" class="btn btn-success">
+      <i class="fa-solid fa-file-excel"></i> Exportar a Excel
+    </button>
+  </div>
+  <div class="col-md-2 text-right pe-0 mb-1">
+    <button (click)="toggleVerComisionesDiferentes()" 
+        [ngClass]="mostrarComisionesDiferentes ? 'btn btn-sm btn-outline-success' : 'btn btn-sm btn-outline-primary'">
+        <i [ngClass]="mostrarComisionesDiferentes ? 'fa-solid fa-list' : 'fa-solid fa-list-check'"></i>
+        {{ mostrarComisionesDiferentes ? 'VER TODO' : 'VER DIFERENTES' }}
+    </button>    
+  </div>
+</div>
+<div class="container mt-1 ps-0">
+  <div *ngIf="errorLoadingComisiones" class="alert alert-danger">
+    {{ errorLoadingComisiones }}
+  </div>
+  <div *ngIf="comisionesList.length === 0 && !errorLoadingComisiones" class="alert alert-warning">
+    No hay registros disponibles.
+  </div>
+  <table *ngIf="comisionesList.length > 0" class="table table-sm table-hover table-bordered">
+    <thead class="table-primary">
+      <tr>
+        <th class="text-center" style="width: 2%;"><input type="checkbox" (change)="toggleAll($event)"></th>
+        <th class="text-center" style="width: 3%;"></th>
+        <th class="text-center" style="width: 20%;">Hotel</th>
+        <th class="text-center" style="width: 10%;">Pasajero</th>
+        <th class="text-center" style="width: 6%;">Cod</th>
+        <th class="text-center" style="width: 6%;">Amadeus</th>
+        <th class="text-center" style="width: 6%;">Recibido</th>
+        <th class="text-center" style="width: 6%;">Diferencia</th>
+        <th class="text-center" style="width: 6%;">Moneda</th>
+        <th class="text-center" style="width: 6%;">Tarifa</th>
+        <th class="text-center" style="width: 6%;">Comis.</th>
+        <th class="text-center" style="width: 6%;">TarifaA</th>
+        <th class="text-center" style="width: 6%;">Comis.A</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let hotel of mostrarComisionesDiferentes ? comisionesListFiltrada : comisionesList">
+        <td class="text-center">
+          <input type="checkbox" [(ngModel)]="hotel.selected" (change)="onCheckboxChange($event)">
+        </td>
+        <td class="text-center">
+          <a class="cursor-pointer text-dark" [routerLink]="['/comisiones/editar', hotel.id]" matTooltip="Editar" matTooltipPosition="left">
+            <i-tabler name="edit" class="icon-18">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              </svg>
+            </i-tabler>
+          </a> 
+          <!-- <a class="cursor-pointer text-danger" (click)="eliminarComision(hotel.id)" matTooltip="Eliminar" matTooltipPosition="right">
+            <i-tabler name="trash" class="icon-18">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              </svg>
+            </i-tabler>
+          </a> -->
+        </td>
+        <td>
+          <span style="font-size: 0.8em;">{{ hotel.HotelName }}</span>
+        </td>
+        <td>
+          <span style="font-size: 0.8em;">{{ hotel.GuestFirstName }} {{ hotel.GuestLastName }} </span>
+          <a *ngIf="!hotel.GuestFirstName" class="cursor-pointer text-info" [routerLink]="['/comisiones/editar', hotel.id]" matTooltip="CORREGIR NOMBRE" matTooltipPosition="right">
+            <i-tabler name="alert-triangle" class="icon-18">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 2L2 22h20L12 2zm0 13v2m0-6v4"/>
+              </svg>
+            </i-tabler>
+          </a>
+        </td>
+        <td class="text-center">
+          <span class="d-block bg-light-primary text-success rounded f-w-600 p-6 p-y-4 f-s-12 ng-star-inserted">{{ hotel.ConfirmationCode }}</span>
+        </td>
+        <td class="text-right bg-body-secondary text-dark pe-3">
+          <span style="font-size: 0.8em;">{{ hotel.ComisionTotal | number:'1.2-2' }}</span>
+        </td>
+        <td class="text-right bg-body-secondary text-dark pe-3">
+          <span style="font-size: 0.8em;">{{ hotel.ComisionTotalReal | number:'1.2-2' }}</span>
+        </td>
+        <td class="text-right bg-warning-subtle pe-3">
+          <span style="font-size: 0.8em;" [innerHTML]="sanitizeHtml(formatDifComision(hotel.difComision))"></span>
+        </td>
+        <td class="text-center bg-body-secondary text-dark pe-3">
+          <span style="font-size: 0.8em;">{{ hotel.RateplanCurrencyCode }}</span>
+        </td>
+        <td class="text-right bg-body-secondary text-dark pe-3">
+          <span style="font-size: 0.8em;">
+            {{ (hotel.TotalOtraMoneda === '' || hotel.TotalOtraMoneda === null || hotel.TotalOtraMoneda === 0 ? hotel.ComisionTotal : hotel.TotalOtraMoneda) | number:'1.2-2' }}
+          </span>
+        </td>        
+        <td class="text-right bg-body-secondary text-dark pe-3">
+          <span style="font-size: 0.8em;">{{ hotel.CommissionAmountInEuro | number:'1.2-2' }}</span>
+        </td>
+        <td class="text-right bg-body-secondary text-dark pe-3">
+          <span style="font-size: 0.8em;">
+            {{ hotel.RateplanTotalPrice | number:'1.2-2' }}
+          </span>
+        </td>        
+        <td class="text-right bg-body-secondary text-dark pe-3">
+          <span style="font-size: 0.8em;">{{ hotel.ComisionOtraMoneda | number:'1.2-2' }}</span>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="5" class="fw-bold text-right bg-dark bg-gradient text-light pe-3">
+          TOTAL:
+        </td>
+        <td class="text-right bg-dark bg-gradient text-light pe-3"><span style="font-size: 0.8em;">$ <strong>{{ sumatoriaAmadeus | number:'1.2-2' }}</strong></span></td>
+        <td class="text-right bg-dark bg-gradient text-light pe-3"><span style="font-size: 0.8em;">$ <strong>{{ sumatoriaRecibidos | number:'1.2-2' }}</strong></span></td>
+        <td class="text-right bg-warning bg-gradient text-dark pe-3"><span style="font-size: 0.8em;">$ <strong>{{ sumatoriaDiferencia1 | number:'1.2-2' }}</strong></span></td>
+        <td colspan="5" class="text-right bg-dark bg-gradient text-light pe-3"></td>
+      </tr>
+    </tbody>
+  </table>
+  <!-- <mat-paginator [length]="comisionesList.length" [pageSize]="10" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator> -->
+</div>

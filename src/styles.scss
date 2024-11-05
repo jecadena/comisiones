@@ -1,0 +1,173 @@
+/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.pointer { cursor: pointer; color:blue !important;}
+.bg-light-success {
+    background-color: #d4edda; /* Ajusta el color según tus necesidades */
+    color: #155724;
+    border-radius: .25rem;
+    font-weight: 600;
+    padding: .375rem .75rem;
+    font-size: .75rem;
+  }
+
+  .bg-light-error {
+    background-color: #f8d7da; /* Ajusta el color según tus necesidades */
+    color: #1c2f72;
+    border-radius: .25rem;
+    font-weight: 600;
+    padding: .375rem .75rem;
+    font-size: .75rem;
+  }
+
+  .bg-light-warning {
+    background-color: #fff3cd; /* Ajusta el color según tus necesidades */
+    color: #856404;
+    border-radius: .25rem;
+    font-weight: 600;
+    padding: .375rem .75rem;
+    font-size: .75rem;
+  }
+
+  .bg-light-primary {
+    background-color: #cce5ff; /* Ajusta el color según tus necesidades */
+    color: #004085;
+    border-radius: .25rem;
+    font-weight: 600;
+    padding: .375rem .75rem;
+    font-size: .75rem;
+  }
+
+  .container-fluid {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 70px;
+  }
+  .left {
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+  .left img {
+    max-width: 100%;
+    height: auto;
+  }
+  .right {
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .right h1 {
+    text-align: center;
+  }
+  .form-container {
+    width: 70%;
+  }
+  @media (max-width: 768px) {
+    header {
+        position: relative;
+        height: auto;
+        padding: 10px;
+        background-color: #f8f9fa;
+    }
+    .container-fluid {
+        flex-direction: column;
+        padding-top: 0;
+    }
+    .left {
+        display: none;
+    }
+    .right {
+        box-shadow: none;
+        padding: 10px;
+    }
+    .form-container {
+        width: 100%;
+    }
+  }
+
+  .w-100 {
+    width: 100%;
+  }
+
+  .d-flex {
+    display: flex;
+  }
+
+  .justify-content-between {
+    justify-content: space-between;
+  }
+
+  .mt-3 {
+    margin-top: 1rem;
+  }
+  
+  .size-small{
+    font-size: 0.8 em;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  
+  .d-flex .form-control {
+    flex: 1;
+  }
+  
+  .d-flex .btn {
+    margin-left: 0.5rem;
+  }
+
+  .mat-mdc-table .mdc-data-table__row {
+    height:28px !important;
+  }
+
+  .mat-mdc-table .mdc-data-table__header-row {
+    height:28px !important;
+    font-weight:700;
+  }
+ 
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  
+  .swal2-toast-custom-hide {
+    animation: fadeOut 0.5s ease-in-out forwards;
+  }
+  
+  .bg-image {
+    background-image: url('./assets/images/backgrounds/fondocomis.jpg');
+    background-size: cover; 
+    background-position: bottom left;
+    background-repeat: no-repeat;
+    height: 100vh;
+}
+.btn-full-width {
+  width: 100%;
+}
+
+
+@media (min-width: 1400px) {
+  .container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl{
+    max-width: 100% !important;
+  }
+}

@@ -1,0 +1,241 @@
+<button class="btn btn-outline-danger mb-3" (click)="regresar()"><i class="fa-solid fa-arrow-rotate-left"></i> REGRESAR</button>
+<form (ngSubmit)="guardarComision()" #comisionForm="ngForm">
+  <table class="table table-sm">
+    <thead class="table-primary">
+      <tr>
+        <th><span *ngIf="!isEditMode">Creación</span><span *ngIf="isEditMode">Edición</span> de Comisión</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <div class="form-group row">
+            <label for="entrada" class="col-sm-2 col-form-label">Entrada</label>
+            <div class="col-sm-4">
+              <input class="form-control" type="date" id="entrada" name="entrada" [(ngModel)]="comision.CheckInDate" (input)="openSecondDateInput()">
+            </div>
+            <label for="salida" class="col-sm-2 col-form-label">Salida</label>
+            <div class="col-sm-4">
+              <input type="date" class="form-control" id="salida" name="salida" [(ngModel)]="comision.CheckOutDate" (ngModelChange)="calcularDiferenciaDias(); calcularTotal(); calcularComisionTotal()">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="confirmacion" class="col-sm-2 col-form-label">Confirmación</label>
+            <div class="col-sm-4">
+              <input type="text" class="form-control" id="confirmacion" name="confirmacion" [(ngModel)]="comision.ConfirmationCode">
+            </div>
+            <label for="StatusComision" class="col-sm-2 col-form-label">Estado</label>
+            <div class="col-sm-4">
+              <input *ngIf="!isEditMode" type="text" class="form-control" id="Estado" name="Estado" value="PEN" readonly>
+              <select *ngIf="isEditMode" class="form-control" id="Estado" name="Estado" [(ngModel)]="comision.Estado">
+                <option *ngFor="let estado of estados" [value]="estado">{{ estado }}</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="nombrePasajero" class="col-sm-2 col-form-label">Nombre/s</label>
+            <div class="col-sm-4">
+              <input type="text" class="form-control" id="nombrePasajero" name="nombrePasajero" [(ngModel)]="comision.GuestFirstName">
+            </div>
+            <label for="apellidoPasajero" class="col-sm-2 col-form-label">Apellido/s</label>
+            <div class="col-sm-4">
+              <input type="text" class="form-control" id="apellidoPasajero" name="apellidoPasajero" [(ngModel)]="comision.GuestLastName">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="ciudad" class="col-sm-2 col-form-label">Ciudad</label>
+            <div class="col-sm-10">
+                <div class="d-flex align-items-center">
+                  <select 
+                    class="form-control" 
+                    id="ciudad" 
+                    name="ciudad" 
+                    [(ngModel)]="comision.CityName" 
+                    (change)="onCityChange($event)"
+                    [hidden]="mostrarCampoTextoCity">
+                    <option *ngFor="let ciudad of ciudades" [value]="ciudad.de_ciudad">
+                      {{ ciudad.de_ciudad }}
+                    </option>
+                  </select>
+                  <input 
+                  *ngIf="mostrarCampoTextoCity" 
+                  type="text" 
+                  class="form-control" 
+                  id="ciudad" 
+                  name="ciudad" 
+                  [(ngModel)]="comision.CityName">
+                    <button 
+                        type="button" 
+                        class="btn btn-outline-secondary ml-2" 
+                        (click)="toggleCampoCity()">
+                        {{ mostrarCampoTextoCity ? 'CANCELAR' : 'NUEVA' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="HotelCountry" class="col-sm-2 col-form-label">País</label>
+            <div class="col-sm-4">
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    id="HotelCountry" 
+                    name="HotelCountry" 
+                    [(ngModel)]="comision.HotelCountry" 
+                    >
+            </div>
+            <label for="RateplanCurrencyCode" class="col-sm-2 col-form-label">Moneda</label>
+            <div class="col-sm-4">
+              <select 
+                class="form-control" 
+                id="RateplanCurrencyCode" 
+                name="RateplanCurrencyCode" 
+                [(ngModel)]="comision.RateplanCurrencyCode">
+                <option value="EUR">EUR</option>
+                <option value="USD">USD</option>
+              </select>
+            </div>                                  
+        </div>
+          <div class="form-group row">
+            <label for="cadena" class="col-sm-2 col-form-label">Cadena</label>
+            <div class="col-sm-10">
+              <div class="d-flex align-items-center">
+                <select class="form-control" id="cadena" name="cadena" [(ngModel)]="comision.HotelChainName" [hidden]="mostrarCampoTextoCadena">
+                  <option *ngFor="let cadena of cadenas" [value]="cadena">{{ cadena }}</option>
+                </select>
+                <input *ngIf="mostrarCampoTextoCadena" type="text" class="form-control" id="cadenaText" name="cadena" [(ngModel)]="comision.HotelChainName">
+                <button type="button" class="btn btn-outline-secondary ml-2" (click)="toggleCampoCadena()">
+                  {{ mostrarCampoTextoCadena ? 'CANCELAR' : 'NUEVA' }}
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="hotel" class="col-sm-2 col-form-label">Hotel</label>
+            <div class="col-sm-10">
+              <div class="d-flex align-items-center">
+                <select class="form-control" id="hotel" name="hotel" [(ngModel)]="comision.HotelName" [hidden]="mostrarCampoTextoHotel">
+                  <option *ngFor="let hotel of hoteles" [value]="hotel">{{ hotel }}</option>
+                </select>
+                <input *ngIf="mostrarCampoTextoHotel" type="text" class="form-control" id="hotelText" name="hotel" [(ngModel)]="comision.HotelName">
+                <button type="button" class="btn btn-outline-secondary ml-2" (click)="toggleCampoHotel()">
+                  {{ mostrarCampoTextoHotel ? 'CANCELAR' : 'NUEVO' }}
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="hotel" class="col-sm-2 col-form-label">Vendedor/a</label>
+            <div class="col-sm-10">
+              <div class="d-flex align-items-center">
+                <!-- Select para elegir un vendedor -->
+                <select class="form-control" id="de_vendedor" name="de_vendedor" 
+                      [(ngModel)]="comision.de_vendedor" 
+                      [hidden]="mostrarCampoTextoVendedor">
+                  <!-- Opción SIN VENDEDOR siempre disponible -->
+                  <option [value]="''">SIN VENDEDOR</option>
+                  <!-- Lista de vendedores -->
+                  <option *ngFor="let vendedor of vendedores" [value]="vendedor">{{ vendedor || 'SIN VENDEDOR' }}</option>
+                </select>
+                <!-- Input fields que se muestran si mostrarCampoTextoVendedor es true -->
+                <div *ngIf="mostrarCampoTextoVendedor" class="row">
+                  <!-- Nombre -->
+                  <div class="col-12 col-md-3 mb-2">
+                    <input type="text" class="form-control" id="de_nombres" name="de_nombres" [(ngModel)]="comision.de_nombres" placeholder="Nombre">
+                  </div>
+                  <!-- Apellido Paterno -->
+                  <div class="col-12 col-md-3 mb-2">
+                    <input type="text" class="form-control" id="de_apellidos" name="de_apellidos" [(ngModel)]="comision.de_apellidos" placeholder="Apellido Paterno">
+                  </div>
+                  <!-- Apellido Materno -->
+                  <div class="col-12 col-md-3 mb-2">
+                    <input type="text" class="form-control" id="de_apellidos1" name="de_apellidos1" [(ngModel)]="comision.de_apellidos1" placeholder="Apellido Materno">
+                  </div>
+                  <!-- Número de documento -->
+                  <div class="col-12 col-md-3 mb-2">
+                    <input type="text" class="form-control" id="co_ruc" name="co_ruc" [(ngModel)]="comision.co_ruc" placeholder="Número de documento" required>
+                  </div>
+                </div>
+                
+                <!-- Botón para alternar entre el select y los campos de texto -->
+                <button type="button" class="btn btn-outline-secondary ml-2" (click)="toggleCampoVendedor()">
+                  {{ mostrarCampoTextoVendedor ? 'CANCELAR' : 'NUEVA' }}
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="Observaciones" class="col-sm-2 col-form-label">Observaciones</label>
+            <div class="col-sm-6">
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    id="Observaciones" 
+                    name="Observaciones" 
+                    [(ngModel)]="comision.Observaciones" 
+                    >
+            </div>
+            <label for="Anulado" class="col-sm-2 col-form-label">Anular</label>
+            <div class="col-sm-2">
+              <input 
+                    type="text" 
+                    class="form-control" 
+                    id="Anulado" 
+                    name="Anulado" 
+                    [(ngModel)]="comision.Anulado" 
+                    >
+            </div>                                  
+        </div>        
+        </td>
+        <td>
+          <div class="form-group row">
+            <label for="precio" class="col-sm-4 col-form-label">Diario {{ comision.RateplanCurrencyCode }}</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" id="precio" name="precio" [(ngModel)]="comision.diario" (ngModelChange)="onPrecioDiarioChange($event)">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="dias" class="col-sm-4 col-form-label">Días</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control bg-light" id="dias" name="dias" [(ngModel)]="comision.numeroDias" (ngModelChange)="calcularTotal()">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="total" class="col-sm-4 col-form-label">Total</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control bg-light" id="total" name="total" [(ngModel)]="comision.TotalOtraMoneda" (ngModelChange)="onTotalChange()">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="PorComision" class="col-sm-4 col-form-label">Com. (%)</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" id="Porcomision" name="Porcomision" [(ngModel)]="comision.PorComision" (ngModelChange)="calcularComisionTotal()" min="0" max="40">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="comisiontotaleuro" class="col-sm-4 col-form-label">Com. EUR/{{ comision.RateplanCurrencyCode }}</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" id="comisiontotaleuro" name="comisiontotaleuro" [(ngModel)]="comision.CommissionAmountInEuro" (ngModelChange)="calcularUSDComisionTotal()">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="ComisionTotalReal" class="col-sm-4 col-form-label">Com. USD</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" id="ComisionTotalReal" name="ComisionTotalReal" [(ngModel)]="comision.ComisionTotalReal" (ngModelChange)="calcularUSDComisionTotal()">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="SignIn" class="col-sm-4 col-form-label">SIGN IN</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" id="SignIn" name="SignIn" [(ngModel)]="comision.SignIn">
+            </div>
+          </div>
+          <div class="form-group row ms-1 me-1">
+            <button *ngIf="isAdmin" type="submit" class="btn btn-warning text-center" [disabled]="comisionForm.invalid"><i class="fa-solid fa-cloud-arrow-up"></i> Guardar</button>
+          </div>        
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</form>

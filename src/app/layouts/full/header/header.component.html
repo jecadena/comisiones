@@ -1,0 +1,47 @@
+<mat-toolbar class="topbar">
+  <!-- Mobile Menu -->
+  <button mat-icon-button (click)="toggleMobileNav.emit()" *ngIf="!showToggle">
+    <i-tabler name="menu-2" class="icon-20 d-flex"></i-tabler>
+  </button>
+
+  <span class="flex-1-auto"></span>
+
+  <!-- profile Dropdown -->
+  Bienvenida, {{ nombreUsuario }} {{ dePatSolicitante }}
+  <button
+    mat-icon-button
+    [matMenuTriggerFor]="profilemenu"
+    aria-label="Notifications"
+  >
+    <img *ngIf="de_img; else defaultImage"
+      [src]="'/assets/images/profile/' + de_img"
+      class="rounded-circle object-cover"
+      width="35"/>
+  <ng-template #defaultImage>
+    <img
+      src="./assets/images/profile/user-1.jpg"
+      class="rounded-circle object-cover"
+      width="35"
+    />
+  </ng-template>
+  </button>
+  <mat-menu #profilemenu="matMenu" class="topbar-dd cardWithShadow">
+    <button mat-menu-item>
+      <mat-icon class="d-flex align-items-center"
+        ><i-tabler name="user" class="icon-18 d-flex"></i-tabler></mat-icon
+      >Mi perfil
+    </button>
+    <button mat-menu-item>
+      <mat-icon class="d-flex align-items-center"
+        ><i-tabler
+          name="list-check"
+          class="icon-18 d-flex"
+        ></i-tabler></mat-icon
+      >Mis tareas
+    </button>
+
+    <div class="p-x-12 m-t-12">
+      <a (click)="logout()" mat-stroked-button color="primary" class="w-100">Salir</a>
+    </div>    
+  </mat-menu>
+</mat-toolbar>

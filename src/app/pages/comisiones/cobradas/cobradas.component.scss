@@ -1,0 +1,51 @@
+table thead {
+    position: sticky;
+    top: 0;
+    z-index: 2; 
+    background-color: white; 
+  }
+  
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+  }
+  
+  .container {
+    max-height: calc(100vh - 230px);
+    overflow-y: auto;
+}
+
+.text-primario {
+  color: blue; /* Cambia el color a tu preferencia */
+}
+
+.text-secondario {
+  color: gray; /* Cambia el color a tu preferencia */
+}
+
+.header-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.sort-icons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: 10px; /* Espacio entre el texto y las flechas */
+}
+
+.sort-icons i {
+  cursor: pointer;
+  font-size: 0.8em; /* Ajusta el tamaño de las flechas */
+  margin: -2px !important; /* Reduce la separación entre las flechas */
+  padding: 0;        /* Elimina el padding extra */
+  line-height: 0.7;    /* Ajusta la altura de línea */
+}
+
+.sort-icons i + i {
+  margin-top: 0px; /* Ajusta la separación vertical entre las flechas */
+}

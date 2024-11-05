@@ -1,0 +1,79 @@
+<div class="row">
+  <div class="col-md-3 ps-0">
+
+  </div>
+  <div class="col-md-2">
+  </div>
+  <div class="col-md-5">
+    <input type="text" class="form-control" placeholder="Buscar..." [(ngModel)]="busqueda" (keyup)="onKeyUp()">
+  </div>
+  <div class="col-md-2 text-right pe-2 mt-1">
+    <h5 class="me-1">Anuladas: {{ countAnuladas }}</h5>   
+  </div>
+</div>
+
+  <div class="container mt-4 ps-0">
+    <div *ngIf="errorLoadingComisiones" class="alert alert-danger">
+      {{ errorLoadingComisiones }}
+    </div> 
+    <div *ngIf="comisionesList.length === 0 && !errorLoadingComisiones" class="alert alert-warning">
+      No hay registros disponibles.
+    </div>
+      <table *ngIf="comisionesList.length > 0" class="table table-sm">
+        <thead class="table-primary">
+          <tr>
+            <!-- <th></th> -->
+            <th *ngIf="isAdmin" class="w-10"></th>
+            <th class="w-30">Hotel</th>
+            <th class="w-30">Pasajero</th>
+            <th class="w-30 text-center">Cod</th>
+            <th class="w-10">Ciudad</th>
+            <th class="w-10">Entrada</th>
+            <th class="w-10">Salida</th>
+            <th class="w-10">Vendedor</th>
+            <th class="w-10 text-right">Total</th>
+            <th class="w-10">Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let hotel of comisionesList">
+            <td *ngIf="isAdmin" class="col-lg-1">
+              <a class="m-r-10 cursor-pointer text-dark" 
+              [routerLink]="['/comisiones/editar', hotel.id]"
+              [queryParams]="{ returnUrl: currentRoute }"
+              matTooltip="Editar" 
+              matTooltipPosition="left">
+              <i-tabler name="edit" class="icon-18">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <!-- Icono de editar -->
+              </svg>
+              </i-tabler>
+              </a> 
+              <a class="m-r-10 cursor-pointer text-danger" (click)="eliminarComision(hotel.id)" matTooltip="Eliminar" matTooltipPosition="right">
+                <i-tabler name="trash" class="icon-18">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <!-- Icono de eliminar -->
+                  </svg>
+                </i-tabler>
+              </a>
+            </td>
+            <td class="col-lg-3"><span style="font-size: 0.8em;">{{ hotel.HotelName }}</span></td>
+            <td><span style="font-size: 0.8em;">{{ hotel.GuestFirstName }} {{ hotel.GuestLastName }}</span></td>
+            <td class="text-center"><span class="bg-light-primary text-primary rounded f-w-600 p-6 p-y-4 f-s-12 ng-star-inserted">{{ hotel.ConfirmationCode }}</span></td>
+            <td><span style="font-size: 0.8em;">{{ hotel.CityName }}</span></td>
+            <td><span style="font-size: 0.8em;">{{ formatDate(hotel.CheckInDate) }}</span></td>
+            <td><span style="font-size: 0.8em;">{{ formatDate(hotel.CheckOutDate) }}</span></td>
+            <td><span style="font-size: 0.8em;">{{ hotel.SignIn }}</span></td>
+            <td class="text-right"><span style="font-size: 0.8em;">{{ hotel.ComisionTotal | number:'1.2-2' }}</span></td>
+            <td><span class="bg-light-warning text-warning rounded f-w-600 p-6 p-y-4 f-s-12 ng-star-inserted">{{ hotel.StatusComision }}</span></td>
+          </tr>
+          <tr>
+            <td *ngIf="isAdmin"></td>
+            <td colspan="7" style="text-align: right;">Total:</td>
+            <td>{{ sumaTotal }}</td>
+            <td *ngIf="isAdmin"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    

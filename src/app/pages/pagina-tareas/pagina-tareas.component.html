@@ -1,0 +1,9 @@
+<div class="board">
+    <div class="column" *ngFor="let columna of columnas">
+      <h2>{{ columna.nombre }}</h2>
+      <div cdkDropList [cdkDropListData]="columna.tareas" class="task-list" (cdkDropListDropped)="drop($event)">
+        <div class="task" *ngFor="let tarea of columna.tareas" cdkDrag>{{ tarea.nombre }}</div>
+      </div>
+    </div>
+  </div>
+  

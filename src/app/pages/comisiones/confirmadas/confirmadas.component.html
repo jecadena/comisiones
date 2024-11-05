@@ -1,0 +1,172 @@
+
+  <div class="row border-bottom">
+    <div *ngIf="isAdmin" class="col-md-8 pb-2">
+      <input type="file" id="fileInput" (change)="onFileChange($event)">
+      <button class="btn btn-success btn-sm ms-2" (click)="confirmarComisiones()">Cargar</button>
+    </div>
+    <div class="col-md-4">
+      <div class="input-group mb-2">
+        <input type="text" class="form-control" placeholder="Buscar verificación..." [(ngModel)]="busqueda" (keyup)="onKeyUp()">
+      </div>
+    </div>
+  </div>
+  <div class="row mb-2 pt-2 border-bottom pb-2 bg-body-secondary">
+    <div class="col-md-12 ">
+      <span class="text-secondary pe-3 border-end border-dark-subtle"><i class="fa-regular fa-money-bill-1"></i> TOTAL: $ {{ SumatoriaComisiones1 | number:'1.2-2' }}</span>
+      <span class="text-secondary ms-3 pe-3 border-end border-dark-subtle"><i class="fa-solid fa-hand-holding-dollar"></i> GBA I.: $ {{ SumatoriaGbaI | number:'1.2-2' }}</span>
+      <span class="text-primary ms-3 pe-3 border-end border-dark-subtle"><i class="fa-solid fa-file-invoice-dollar"></i> A FACTURAR: <strong>$ {{ aFacturar | number:'1.2-2' }}</strong></span>
+      <span class="text-secondary ms-3 pe-3 border-end border-dark-subtle"><i class="fa-solid fa-money-bill-transfer"></i> FEE: $ {{ SumatoriaFee | number:'1.2-2' }}</span>
+      <span class="text-secondary ms-3 pe-3 border-end border-dark-subtle"><i class="fa-solid fa-hand-holding-dollar"></i> GBA L.: $ {{ SumatoriaGbaL | number:'1.2-2' }}</span>
+    </div>
+  </div>
+    <div class="row pb-1 pt-1 border-bottom">
+        <div class="col-md-6">
+          <span class="text-secondary pe-3 border-end">Comisiones: <strong>{{ comisionesList.length }}</strong></span>
+          <span class="text-secondary ms-3 pe-3 border-end"><i class="fa-regular fa-circle-check"></i> Encontradas: <strong>{{ encontradas }}</strong></span> 
+          <span class="text-primary ps-3"><i class="fa-solid fa-circle-plus"></i> Nuevas: <strong>{{ faltantes }}</strong>  </span>      
+        </div>
+        <div class="col-md-6 text-end">
+          <!-- Botón de confirmación con binding a isSecondTableCheckboxChecked -->
+          <button class="btn btn-primary btn-sm me-3" (click)="procesarConfirmacionComisiones()" [disabled]="!isSecondTableCheckboxChecked">
+            CONFIRMAR COMISIONES
+          </button>
+          <button class="btn btn-secondary btn-sm" (click)="cancelar()">CANCELAR</button>
+        </div>
+    </div>
+  <div class="container mt-2 ps-0">    
+    <div *ngIf="errorLoadingComisiones" class="alert alert-danger">
+      {{ errorLoadingComisiones }}
+    </div> 
+    <!-- Mostrar mensaje de "No hay registros disponibles" solo cuando comisionesList esté vacío -->
+    <div *ngIf="comisionesList.length === 0 && !errorLoadingComisiones && fechasFacturacion.length === 0" class="alert alert-warning mt-1 w-100">
+      No hay registros disponibles.
+    </div>
+    <!-- Mostrar las fechas de facturación solo cuando comisionesList esté vacío -->
+    <div *ngIf="comisionesList.length === 0" >
+      <div class="row fila" *ngIf="fechasFacturacion.length > 0 && !errorLoadingComisiones">
+        <div class="col-md-6"><h5 class="text-info">COMISIONES EN PROCESO DE COBRANZA</h5></div>
+        <div class="col-md-6 text-right">
+          <button class="btn btn-sm btn-danger" *ngIf="isAnyCheckboxChecked" (click)="eliminarComisionesSeleccionadas()">
+            <i class="fa-solid fa-trash-can pe-2"></i> ELIMINAR COMISIONES
+          </button>
+          <button class="btn btn-sm btn-success" *ngIf="isAnyCheckboxChecked" (click)="exportarExcelSeleccionado()">
+            <i class="fa-solid fa-file-excel pe-2"></i> EXCEL COMISIONES
+          </button>
+        </div>
+      </div>
+      <div *ngIf="fechasFacturacion.length > 0 && !errorLoadingComisiones">
+        <div>
+          <table class="table table-sm table-bordered">
+            <thead class="table-primary">
+              <tr>
+                <th *ngIf="isAdmin" style="width: 2%;">
+                  <input type="checkbox" (change)="toggleAll($event)">
+                </th>
+                <th class="text-center" style="width: 8%;">FECHA</th>
+                <th class="text-center" style="width: 10%;">AGENCIA</th>
+                <th class="text-right pe-2" style="width: 11%;">COMISIÓN</th>
+                <th class="text-right pe-2" style="width: 10%;">GBA I.</th>
+                <th class="text-right pe-2" style="width: 11%;">COM. SIN GBAI</th>
+                <th class="text-right pe-2" style="width: 10%;">FEE</th>
+                <th class="text-right pe-2" style="width: 10%;">BANCO</th>
+                <th class="text-right pe-2" style="width: 12%;">DISTRIBUIR</th>
+                <th class="text-center" style="width: 16%;">ACCIÓN</th>
+              </tr>
+            </thead>
+            <tbody *ngFor="let fecha of fechasFacturacion">
+                      <tr *ngFor="let comision of comisionesPorFecha[fecha]">
+                        <td *ngIf="isAdmin">
+                          <input type="checkbox" [(ngModel)]="comision.selected" (change)="onCheckboxChange()">
+                        </td>
+                        <td class="text-primary text-center">
+                          <button class="btn btn-link p-0 text-primary" style="text-decoration: none !important; font-weight: 600;" (click)="revisarComision(fecha)" matTooltip="DETALLES / VENDEDORES" matTooltipPosition="right">
+                            {{ formatDate(fecha.slice(0, 10)) }}
+                          </button>
+                        </td>
+                        <td class="text-primary text-center">{{ comision.AgencyName }}</td>
+                        <td class="text-secondary text-right pe-2">{{ comision.ComisionTotalReal | number:'1.2-2' }}</td>
+                        <td class="text-secondary text-right pe-2">{{ comision.GbaI | number:'1.2-2' }}</td>
+                        <td class="text-secondary text-right pe-2">{{ comision.Comision | number:'1.2-2' }}</td>
+                        <td class="text-secondary text-right pe-2">{{ comision.Fee | number:'1.2-2' }}</td>
+                        <td class="text-secondary text-right pe-2">{{ comision.RecBanco | number:'1.2-2' }}</td>
+                        <td class="text-secondary text-right pe-2">{{ comision.ComisionDistribuir | number:'1.2-2' }}</td>
+                        <td class="text-secondary text-center"><button class="btn btn-warning btn-sm" (click)="revisarComision(fecha)">DETALLES / VENDEDORES</button></td>
+                      </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>      
+    </div>
+
+    <div *ngIf="errorLoadingComisiones" class="alert alert-danger mt-1 w-100">
+      {{ errorLoadingComisiones }}
+    </div>
+
+    <table *ngIf="comisionesList.length > 0" class="table table-hover table-sm">
+      <thead class="table-primary">
+        <tr>
+          <th class="text-center" style="width: 3%;"><input type="checkbox" (change)="toggleAllSecondTable($event)"></th>
+          <th class="text-center" style="width: 2%;"></th>
+          <th class="text-center" style="width: 2%"></th>
+          <th class="text-center" style="width: 19%;">Hotel</th>
+          <th class="text-center" style="width: 11%;">Pasajero</th>
+          <th class="text-center" style="width: 8%;">Vendedor</th>
+          <th class="text-center" style="width: 6%;">Cod</th>
+          <th class="text-center" style="width: 8%;">Ciudad</th>
+          <th class="text-center" style="width: 7%;">Entrada</th>
+          <th class="text-center" style="width: 7%;">Salida</th>
+          <th class="text-center" style="width: 7%;">Recibido</th>
+          <th class="text-center" style="width: 7%;">Banco</th>
+          <th class="text-center" style="width: 8%;">Distribuir</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let hotel of comisionesList; let i = index" 
+            [class.new]="hotel.isNew"
+            [ngClass]="{'bg-danger-subtle': hotel.ComisionTotal > hotel.ComisionTotalReal}">
+          <td class="text-center">
+            <input type="checkbox" [(ngModel)]="hotel.selected" (change)="onSecondTableCheckboxChange()">
+          </td>
+          <td class="text-center">
+            <span *ngIf="!hotel.isNew"><i class="fa-regular fa-circle-check text-primary"></i></span>
+            <span *ngIf="hotel.isNew"><i class="fa-solid fa-circle-plus text-accent"></i></span>
+          </td>
+          <td>
+            <a class="cursor-pointer text-dark" [routerLink]="['/comisiones/editar', hotel.id]" matTooltip="Editar" matTooltipPosition="left">
+              <i-tabler name="edit" class="icon-18">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"></svg>
+              </i-tabler>
+            </a>
+          </td>
+          <td><span style="font-size: 0.8em;">{{ hotel.HotelName }}</span></td>
+          <td><span style="font-size: 0.8em;">{{ hotel.GuestFirstName }} {{ hotel.GuestLastName }}</span></td>
+          <td><span style="font-size: 0.8em;">{{ hotel.de_vendedor || '---' }}</span></td>
+          <td class="text-center">
+            <span class="bg-light-primary d-block text-primary rounded f-w-600 p-6 p-y-4 f-s-12 ng-star-inserted">
+              {{ hotel.ConfirmationCode }}
+            </span>
+          </td>
+          <td><span style="font-size: 0.8em;">{{ hotel.CityName }}</span></td>
+          <td>
+            <span style="font-size: 0.8em;">
+              {{ formatDate(hotel.CheckInDate) }}
+            </span>
+          </td>
+          <td>
+            <span style="font-size: 0.8em;">
+              {{ formatDate(hotel.CheckOutDate) }}
+            </span>
+          </td>
+          <td class="text-right"><span style="font-size: 0.8em;">{{ hotel.ComisionTotalReal | number:'1.2-2' }}</span></td>
+          <td class="text-right"><span style="font-size: 0.8em;">{{ hotel.RecBanco | number:'1.2-2' }}</span></td>
+          <td class="text-right"><span style="font-size: 0.8em;">{{ hotel.ComisionDistribuir | number:'1.2-2' }}</span></td>
+        </tr>
+        <tr>
+          <td colspan="9" class="text-right pe-2" style="background-color:lavender;"><strong>TOTAL: </strong></td>
+          <td class="text-right" style="background-color:lavender;"><span style="font-size: 0.8em;font-weight: 700;">$ {{ SumatoriaComisiones1 | number:'1.2-2' }}</span></td>
+          <td class="text-right" style="background-color:lavender;"><span style="font-size: 0.8em;font-weight: 700;">$ {{ SumatoriaRecibido | number:'1.2-2' }}</span></td>
+          <td class="text-right" style="background-color:lavender;"><span style="font-size: 0.8em;font-weight: 700;">$ {{ SumatoriaDistribuir | number:'1.2-2' }}</span></td>
+        </tr>
+      </tbody>
+    </table>    
+  </div>

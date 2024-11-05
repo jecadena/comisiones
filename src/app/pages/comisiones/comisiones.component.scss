@@ -1,0 +1,20 @@
+table thead {
+    position: sticky;
+    top: 0;
+    z-index: 2; 
+    background-color: white; 
+  }
+  
+
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+  }
+  
+  .container {
+    max-height: calc(100vh - 260px);
+    overflow-y: auto;
+}
+
+  

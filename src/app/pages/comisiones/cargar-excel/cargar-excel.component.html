@@ -1,0 +1,48 @@
+<div class="container">
+  <blockquote *ngIf="isAdmin" class="blockquote">
+    <p class="mb-0">Cargar Comisiones</p>
+    <footer class="blockquote-footer">Seleccione su archivo Excel para cargar las comisiones, se permite archivos de tipo <cite title="Source Title">xls, xlsx</cite>. </footer>
+  </blockquote>
+  <blockquote *ngIf="!isAdmin" class="blockquote">
+    <p class="mb-0">Cargar Comisiones</p>
+    <footer class="blockquote-footer text-danger">Solamente los administradores pueden cargar datos al sistema. </footer>
+  </blockquote>
+  <div *ngIf="isAdmin" class="card">
+    <div class="card-body">
+      <input type="file" (change)="onFileChange($event)" />
+      <button [disabled]="cargando" class="btn btn-warning btn-sm ms-4" (click)="cargarComisiones()"><i class="fa-solid fa-upload"></i> Cargar Comisiones</button>
+    </div>
+  </div>
+  <div *ngIf="showSuccessMessage" class="alert alert-success mt-2">
+    <strong>Éxito!</strong> Todos los registros han sido cargados.
+  </div>
+  
+  <div *ngIf="!showSuccessMessage && excelData.length > 0">
+    <table class="table table-sm mt-2">
+      <thead class="table-dark">
+        <tr>
+          <th>Hotel</th>
+          <th>Pasajero</th>
+          <th>Code</th>
+          <th>Ciudad</th>
+          <th>Check In</th>
+          <th>Check Out</th>
+          <th class="text-center">Vendedor</th>
+          <th class="text-right">Com.USD</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of excelData">
+          <td>{{ data.hotel }}</td>
+          <td>{{ data.pasajero }}</td>
+          <td>{{ data.confirmationCode }}</td>
+          <td>{{ data.ciudad }}</td>
+          <td>{{ data.checkIn }}</td>
+          <td>{{ data.checkOut }}</td>
+          <td class="text-center">{{ data.vendedor.substring(4, data.vendedor.length - 2).toUpperCase() }}</td>
+          <td class="text-right">{{ data.comisionUsd | number:'1.2-2' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

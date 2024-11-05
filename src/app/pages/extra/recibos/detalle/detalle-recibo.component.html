@@ -1,0 +1,117 @@
+<button (click)="regresar()" class="btn btn-outline-danger me-4"><i class="fa-solid fa-arrow-rotate-left"></i> REGRESAR</button> <button (click)="generatePdf()" class="btn btn-outline-primary"><i class="fa-regular fa-file-pdf"></i> Generar Recibo PDF</button>
+  <mat-card class="w-100" id="contentToConvert">
+    <mat-card-header>
+      <mat-card-title>
+        Hotel: <span class="text-accent">{{ HotelChainName }}</span> / {{ HotelName }}
+      </mat-card-title>
+      <mat-card-subtitle class="d-flex justify-content-between w-100">
+        <span>Ciudad: <strong>{{ CityName }}</strong></span>
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="row mt-3">
+        <div *ngIf="FacNumero" class="col-md-2">
+          <mat-form-field appearance="fill">
+            <mat-label>Factura:</mat-label>
+            <input [(ngModel)]="FacNumero" matInput placeholder="Número" id="FacNumero" name="FacNumero" readonly>
+          </mat-form-field>
+        </div>
+        <div *ngIf="RecNumero" class="col-md-2">
+          <mat-form-field appearance="fill">
+            <mat-label>Recibo:</mat-label>
+            <input matInput type="text" [(ngModel)]="RecNumero" id="RecNumero" name="RecNumero" readonly>
+          </mat-form-field>
+        </div>
+        <div class="col-md-2">
+          <mat-form-field appearance="fill" style="width:15vw">
+            <mat-label>Fecha de creación:</mat-label>
+            <input matInput placeholder="Fecha" [(ngModel)]="FechaCreacion" [value]="getCurrentDate()" id="FechaCreacion" name="FechaCreacion" readonly>
+          </mat-form-field>
+        </div>
+        <div class="col-md-6">
+          <mat-form-field appearance="fill" style="width:35vw">
+            <mat-label>Forma de Pago:</mat-label>
+            <mat-select [(ngModel)]="selectedFormaPago" id="formaPago" name="formaPago">
+              <mat-option *ngFor="let forma of formaPago" [value]="forma.id">{{ forma.codigo }} - {{ forma.descripcion }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-8">
+          <mat-form-field appearance="fill" style="width:49vw">
+            <mat-label>Banco:</mat-label>
+            <mat-select [(ngModel)]="selectedBanco" id="banco" name="banco">
+              <mat-option *ngFor="let banco of bancos" [value]="banco.id">{{ banco.nombre }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-md-4">
+          <mat-form-field appearance="fill" style="width:23vw">
+            <mat-label>Número de cuenta</mat-label>
+            <mat-select [(ngModel)]="selectedCuenta" id="cuenta" name="cuenta">
+              <mat-option *ngFor="let cuenta of cuentaBanco" [value]="cuenta.id">{{ cuenta.numero }} - {{ cuenta.descripcion }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-2">
+          <mat-form-field appearance="fill" style="width:23vw">
+            <mat-label>Moneda</mat-label>
+            <input matInput type="text" [(ngModel)]="monedaBanco" id="moneda" name="moneda" readonly>
+          </mat-form-field>
+        </div>
+        <div class="col-lg-2">
+          <mat-form-field appearance="fill" style="width:23vw">
+            <mat-label>Monto</mat-label>
+            <input matInput type="text" [(ngModel)]="comisionTotal" id="monto" name="monto" readonly>
+          </mat-form-field>
+        </div>
+        <div class="col-lg-2">
+          <mat-form-field appearance="fill" style="width:23vw">
+            <mat-label>Tipo de Cambio</mat-label>
+            <input matInput type="text" [(ngModel)]="selectedTipoCambio" id="tipoCambio" name="tipoCambio" readonly>
+          </mat-form-field>          
+        </div>
+        <div class="col-lg-6">
+          <mat-form-field appearance="fill" style="width:35vw">
+            <mat-label>Observaciones</mat-label>
+            <input matInput type="text" [(ngModel)]="observaciones" id="observaciones" name="observaciones">
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th class="col-md-3">Hotel</th>
+              <th class="col-md-1">Código</th>
+              <th class="col-md-2">Check In</th>
+              <th class="col-md-2">Check Out</th>
+              <th class="col-md-1 text-center">Precio</th>
+              <th class="col-md-1 text-center">Días</th>
+              <th class="col-md-1">Total</th>
+              <th class="col-md-2">Comisión</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="col-md-3">{{ HotelName }}</td>
+              <td class="col-md-1">
+                <span class="bg-light-accent text-accent rounded f-w-600 p-6 p-y-4 f-s-12 ng-star-inserted">{{ ConfirmationCode }}</span>
+              </td>
+              <td class="col-md-2">{{ CheckInDate }}</td>
+              <td class="col-md-2">{{ CheckOutDate }}</td>
+              <td class="col-md-1 text-center">{{ HotelPrice }}</td>
+              <td class="col-md-1 text-center">{{ numeroDias }}</td>
+              <td class="col-md-1">{{ HotelPriceCurrency }} {{ sumaParcial }}</td>
+              <td class="col-md-1 text-end">
+                <strong>{{ HotelPriceCurrency }} {{ comisionTotal }}</strong>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>

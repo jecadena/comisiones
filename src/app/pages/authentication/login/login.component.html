@@ -1,0 +1,77 @@
+<div class="container-fluid">
+  <div class="row no-gutters w-100">
+    <div class="col-md-7 left d-none d-md-flex align-items-center justify-content-center bg-image">
+      <!-- <img src="./assets/images/products/login-bg.svg" alt="Imagen" class="img-fluid w-50"> -->
+    </div>
+    <div class="col-12 col-md-5 right d-flex align-items-center justify-content-center">
+      <div class="form-container">
+        <mat-card class="cardWithShadow boxed-auth">
+          <mat-card-content class="p-32">
+            <div class="text-center">
+              <a [routerLink]="['/dashboard']">
+                <img
+                  src="./assets/images/logos/logoac.png"
+                  class="align-middle m-2"
+                  alt="logo"
+                />
+              </a>
+            </div>
+            <form class="m-t-30" (submit)="login()" autocomplete="off">
+              <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Usuario</mat-label>
+              <mat-form-field appearance="outline" class="w-100" color="primary">
+                <input matInput name="usuario" id="usuario" [(ngModel)]="usuario" />
+              </mat-form-field>
+
+              <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Clave</mat-label>
+              <mat-form-field appearance="outline" class="w-100" color="primary">
+                <input matInput type="password" name="contrasena" id="contrasena" [(ngModel)]="contrasena" />
+              </mat-form-field>
+              <button type="submit" mat-flat-button color="primary" class="w-100">Ingresar</button>
+            </form>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" *ngIf="loading">
+  <div class="spinner"></div>
+  <span class="loading-text">Ingresando al sistema...</span>
+</div>
+
+<!--
+ <div class="blank-layout-container justify-content-center align-items-center bg-light-primary">
+  <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
+    <div class="col-lg-4 d-flex align-items-center">
+      <mat-card class="cardWithShadow boxed-auth" style="background-color:#f7f7f7;">
+        <mat-card-content class="p-32">
+          <div class="text-center">
+            <a [routerLink]="['/dashboard']">
+              <img
+                src="./assets/images/logos/logoac.png"
+                class="align-middle m-2"
+                alt="logo"
+              />
+            </a>
+          </div>
+          <form class="m-t-30" (submit)="login()" autocomplete="off">
+            <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Usuario</mat-label>
+            <mat-form-field appearance="outline" class="w-100" color="primary">
+              <input matInput name="usuario" id="usuario" [(ngModel)]="usuario" />
+            </mat-form-field>
+
+            <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Clave</mat-label>
+            <mat-form-field appearance="outline" class="w-100" color="primary">
+              <input matInput type="password" name="contrasena" id="contrasena" [(ngModel)]="contrasena" />
+            </mat-form-field>
+            <button type="submit" mat-flat-button color="primary" class="w-100">Ingresar</button>
+
+          </form>
+          
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>
+-->

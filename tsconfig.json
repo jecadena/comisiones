@@ -1,0 +1,49 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "typeRoots": ["node_modules/@types"],
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "sourceMap": true,
+    "declaration": false,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "ES2022",
+    "useDefineForClassFields": false,
+    "strictPropertyInitialization": false,
+    "lib": ["ES2022", "dom"],
+    "paths": {
+      "core-js/modules/es.array.index-of": ["node_modules/core-js/modules/es.array.index-of.js"],
+      "core-js/modules/es.array.iterator": ["node_modules/core-js/modules/es.array.iterator.js"],
+      "core-js/modules/es.array.reduce": ["node_modules/core-js/modules/es.array.reduce.js"],
+      "core-js/modules/es.array.reverse": ["node_modules/core-js/modules/es.array.reverse.js"],
+      "core-js/modules/es.promise": ["node_modules/core-js/modules/es.promise.js"],
+      "core-js/modules/es.regexp.to-string": ["node_modules/core-js/modules/es.regexp.to-string.js"],
+      "core-js/modules/es.string.ends-with": ["node_modules/core-js/modules/es.string.ends-with.js"],
+      "core-js/modules/es.string.includes": ["node_modules/core-js/modules/es.string.includes.js"],
+      "core-js/modules/es.string.match": ["node_modules/core-js/modules/es.string.match.js"],
+      "core-js/modules/es.string.replace": ["node_modules/core-js/modules/es.string.replace.js"],
+      "core-js/modules/es.string.split": ["node_modules/core-js/modules/es.string.split.js"],
+      "core-js/modules/es.string.starts-with": ["node_modules/core-js/modules/es.string.starts-with.js"],
+      "core-js/modules/es.string.trim": ["node_modules/core-js/modules/es.string.trim.js"],
+      "core-js/modules/web.dom-collections.iterator": ["node_modules/core-js/modules/web.dom-collections.iterator.js"],
+      "raf": ["node_modules/raf/index.js"],
+      "rgbcolor": ["node_modules/rgbcolor/index.js"]
+    }
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  }
+}

@@ -1,0 +1,97 @@
+<!-- page content -->
+<div class="right_col" role="main">
+  <div class="">
+    <div class="page-title">
+      <div class="title_left">
+        <div class="row">
+          <div class="col-md-8">
+            <h3 class="text-primary mb-2">Comisiones <small>Amadeus</small></h3>
+          </div>
+          <div class="col-md-4 text-right">
+            <button (click)="logout()" class="btn btn-danger">Cerrar sesión</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="x_panel">
+          <div class="x_title">
+            <h2>Listado de Comisiones</h2>
+            <div class="clearfix"></div>
+          </div>
+          <div class="x_content">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <input type="text" class="form-control" [(ngModel)]="busqueda" (keyup)="onKeyUp()" placeholder="Buscar por comisión...">
+                </div>
+              </div>
+              <div class="col-md-6 text-right">
+                <button (click)="regresar()" class="btn btn-warning">Regresar</button>
+                <button (click)="estructura()" class="btn btn-info">Estructura</button>
+              </div>
+            </div>
+
+            <ng-container *ngIf="amadeusListFiltered.length > 0">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Agencia</th>
+                    <th>Fecha</th>
+                    <th>Oficina</th>
+                    <th>Emisor</th>
+                    <th>Comisión</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <ng-container *ngIf="amadeusListFiltered.length === 0">
+                    <tr>
+                      <td colspan="7" class="text-center">No se encontraron registros</td>
+                    </tr>
+                  </ng-container>
+                  <tr *ngFor="let item of amadeusListFiltered; let i = index">
+                    <td>{{ i + 1 + ((currentPage - 1) * itemsPerPage) }}</td>
+                    <td>{{ item.AgencyName }}</td>
+                    <td>{{ formatearFecha(item.IssuedDate) }}</td>
+                    <td>{{ item.OfficeIATA }}</td>
+                    <td>{{ item.IssuerCode }}</td>
+                    <td>{{ item.HotelPrice }}</td>
+                    <td>
+                      <!-- Agregar aquí botones o enlaces para acciones -->
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- Paginación -->
+              <mat-paginator [pageSizeOptions]="pageSizeOptions"
+                             [pageSize]="itemsPerPage"
+                             [length]="totalItems"
+                             (page)="onPageChange($event.pageIndex + 1)">
+              </mat-paginator>
+
+              <!-- Selector de ítems por página -->
+              <div class="form-group">
+                <label for="itemsPerPageSelect">Ítems por página:</label>
+                <select id="itemsPerPageSelect" class="form-control" (change)="onItemsPerPageChange($event)">
+                  <option *ngFor="let option of pageSizeOptions" [value]="option">{{ option }}</option>
+                </select>
+              </div>
+            </ng-container>
+
+            <ng-container *ngIf="errorLoadingAmadeus">
+              <div class="alert alert-danger" role="alert">
+                {{ errorLoadingAmadeus }}
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /page content -->
