@@ -16,13 +16,12 @@
       <input type="text" class="form-control form-control-sm bg-info-subtle" [(ngModel)]="numero" name="numero" style="width: 100%;">
     </form>    
   </div>
-<div class="col-md-2 pt-2">
-  <button class="btn btn-sm btn-success" (click)="exportarExcelFiltrado()">
-    <i class="fa-regular fa-file-excel"></i> 
-    {{ isFiltering ? 'EXPORTAR NUEVOS' : 'EXPORTAR TODOS' }}
-  </button>
-</div>
-
+  <div class="col-md-2 pt-2">
+    <button class="btn btn-sm btn-success" (click)="exportarExcelFiltrado()">
+      <i class="fa-regular fa-file-excel"></i>
+      {{ isSearchFiltering ? 'EXPORTAR FILTRADOS' : (isFiltering ? 'EXPORTAR NUEVOS' : 'EXPORTAR TODOS') }}
+    </button>
+  </div>
   <div class="col-md-2 pt-2 text-right">
     <h5 class="text-end w-100">Cobradas: {{ countCobradas }}</h5>
   </div>
@@ -100,7 +99,7 @@
 <div class="container mt-1 ps-0">
   <div *ngIf="errorLoadingComisiones" class="alert alert-danger">
     {{ errorLoadingComisiones }}
-  </div> 
+  </div>
   <div *ngIf="filteredComisionesList.length === 0 && !errorLoadingComisiones" class="alert alert-warning">
     No hay registros disponibles.
   </div>

@@ -90,11 +90,11 @@ export class CargarExcelComponent implements OnInit{
 }
 
   verificarArchivo() {
-    return this.http.post<{ exists: boolean }>('http://localhost:3000/verificarArchivo', { nombreArchivo: this.fileName });
+    return this.http.post<{ exists: boolean }>('https://actoursapps.com.pe:3000/verificarArchivo', { nombreArchivo: this.fileName });
   }
 
   verificarConfirmationCode(confirmationCode: string) {
-    return this.http.post<{ exists: boolean }>('http://localhost:3000/verificarConfirmationCode', { confirmationCode });
+    return this.http.post<{ exists: boolean }>('https://actoursapps.com.pe:3000/verificarConfirmationCode', { confirmationCode });
   }
 
   cargarComisiones() {
@@ -234,7 +234,7 @@ export class CargarExcelComponent implements OnInit{
         NombreArchivo: this.fileName
       };
   
-      this.http.post('http://localhost:3000/agregarcomisiones', { data: requestData })
+      this.http.post('https://actoursapps.com.pe:3000/agregarcomisiones', { data: requestData })
         .subscribe({
           next: (response: any) => {
             registrosCargados++;

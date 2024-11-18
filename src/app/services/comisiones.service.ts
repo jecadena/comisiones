@@ -8,7 +8,7 @@ import { Observable, BehaviorSubject, of } from 'rxjs';
 export class ComisionesService {
   private comisionesSubject = new BehaviorSubject<any[]>([]);
   comisiones$ = this.comisionesSubject.asObservable();
-  private baseUrl = 'http://localhost:3000';
+  private baseUrl = 'https://actoursapps.com.pe:3000';
 
   constructor(private http: HttpClient) { }
 

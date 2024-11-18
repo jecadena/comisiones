@@ -9,7 +9,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 export class AmadeusService {
   private amadeusSubject = new BehaviorSubject<any[]>([]);
   amadeus$ = this.amadeusSubject.asObservable();
-  private baseUrl = 'http://localhost:3000';
+  private baseUrl = 'https://actoursapps.com.pe:3000';
 
   constructor(private http: HttpClient) { }
 

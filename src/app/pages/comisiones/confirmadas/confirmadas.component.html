@@ -10,6 +10,7 @@
       </div>
     </div>
   </div>
+
   <div class="row mb-2 pt-2 border-bottom pb-2 bg-body-secondary">
     <div class="col-md-12 ">
       <span class="text-secondary pe-3 border-end border-dark-subtle"><i class="fa-regular fa-money-bill-1"></i> TOTAL: $ {{ SumatoriaComisiones1 | number:'1.2-2' }}</span>
@@ -19,28 +20,32 @@
       <span class="text-secondary ms-3 pe-3 border-end border-dark-subtle"><i class="fa-solid fa-hand-holding-dollar"></i> GBA L.: $ {{ SumatoriaGbaL | number:'1.2-2' }}</span>
     </div>
   </div>
-    <div class="row pb-1 pt-1 border-bottom">
-        <div class="col-md-6">
-          <span class="text-secondary pe-3 border-end">Comisiones: <strong>{{ comisionesList.length }}</strong></span>
-          <span class="text-secondary ms-3 pe-3 border-end"><i class="fa-regular fa-circle-check"></i> Encontradas: <strong>{{ encontradas }}</strong></span> 
-          <span class="text-primary ps-3"><i class="fa-solid fa-circle-plus"></i> Nuevas: <strong>{{ faltantes }}</strong>  </span>      
-        </div>
-        <div class="col-md-6 text-end">
-          <!-- Botón de confirmación con binding a isSecondTableCheckboxChecked -->
-          <button class="btn btn-primary btn-sm me-3" (click)="procesarConfirmacionComisiones()" [disabled]="!isSecondTableCheckboxChecked">
-            CONFIRMAR COMISIONES
-          </button>
-          <button class="btn btn-secondary btn-sm" (click)="cancelar()">CANCELAR</button>
-        </div>
-    </div>
+
+  <div class="row pb-1 pt-1 border-bottom">
+      <div class="col-md-6">
+        <span class="text-secondary pe-3 border-end">Comisiones: <strong>{{ comisionesList.length }}</strong></span>
+        <span class="text-secondary ms-3 pe-3 border-end"><i class="fa-regular fa-circle-check"></i> Encontradas: <strong>{{ encontradas }}</strong></span> 
+        <span class="text-primary ps-3"><i class="fa-solid fa-circle-plus"></i> Nuevas: <strong>{{ faltantes }}</strong>  </span>      
+      </div>
+      <div class="col-md-6 text-end">
+        <!-- Botón de confirmación con binding a isSecondTableCheckboxChecked -->
+        <button class="btn btn-primary btn-sm me-3" (click)="procesarConfirmacionComisiones()" [disabled]="!isSecondTableCheckboxChecked">
+          CONFIRMAR COMISIONES
+        </button>
+        <button class="btn btn-secondary btn-sm" (click)="cancelar()">CANCELAR</button>
+      </div>
+  </div>
+
   <div class="container mt-2 ps-0">    
     <div *ngIf="errorLoadingComisiones" class="alert alert-danger">
       {{ errorLoadingComisiones }}
     </div> 
+
     <!-- Mostrar mensaje de "No hay registros disponibles" solo cuando comisionesList esté vacío -->
     <div *ngIf="comisionesList.length === 0 && !errorLoadingComisiones && fechasFacturacion.length === 0" class="alert alert-warning mt-1 w-100">
       No hay registros disponibles.
     </div>
+
     <!-- Mostrar las fechas de facturación solo cuando comisionesList esté vacío -->
     <div *ngIf="comisionesList.length === 0" >
       <div class="row fila" *ngIf="fechasFacturacion.length > 0 && !errorLoadingComisiones">
@@ -54,6 +59,7 @@
           </button>
         </div>
       </div>
+
       <div *ngIf="fechasFacturacion.length > 0 && !errorLoadingComisiones">
         <div>
           <table class="table table-sm table-bordered">
@@ -74,24 +80,24 @@
               </tr>
             </thead>
             <tbody *ngFor="let fecha of fechasFacturacion">
-                      <tr *ngFor="let comision of comisionesPorFecha[fecha]">
-                        <td *ngIf="isAdmin">
-                          <input type="checkbox" [(ngModel)]="comision.selected" (change)="onCheckboxChange()">
-                        </td>
-                        <td class="text-primary text-center">
-                          <button class="btn btn-link p-0 text-primary" style="text-decoration: none !important; font-weight: 600;" (click)="revisarComision(fecha)" matTooltip="DETALLES / VENDEDORES" matTooltipPosition="right">
-                            {{ formatDate(fecha.slice(0, 10)) }}
-                          </button>
-                        </td>
-                        <td class="text-primary text-center">{{ comision.AgencyName }}</td>
-                        <td class="text-secondary text-right pe-2">{{ comision.ComisionTotalReal | number:'1.2-2' }}</td>
-                        <td class="text-secondary text-right pe-2">{{ comision.GbaI | number:'1.2-2' }}</td>
-                        <td class="text-secondary text-right pe-2">{{ comision.Comision | number:'1.2-2' }}</td>
-                        <td class="text-secondary text-right pe-2">{{ comision.Fee | number:'1.2-2' }}</td>
-                        <td class="text-secondary text-right pe-2">{{ comision.RecBanco | number:'1.2-2' }}</td>
-                        <td class="text-secondary text-right pe-2">{{ comision.ComisionDistribuir | number:'1.2-2' }}</td>
-                        <td class="text-secondary text-center"><button class="btn btn-warning btn-sm" (click)="revisarComision(fecha)">DETALLES / VENDEDORES</button></td>
-                      </tr>
+              <tr *ngFor="let comision of comisionesPorFecha[fecha]">
+                <td *ngIf="isAdmin">
+                  <input type="checkbox" [(ngModel)]="comision.selected" (change)="onCheckboxChange()">
+                </td>
+                <td class="text-primary text-center">
+                  <button class="btn btn-link p-0 text-primary" style="text-decoration: none !important; font-weight: 600;" (click)="revisarComision(fecha)" matTooltip="DETALLES / VENDEDORES" matTooltipPosition="right">
+                    {{ formatDate(fecha.slice(0, 10)) }}
+                  </button>
+                </td>
+                <td class="text-primary text-center">{{ comision.AgencyName }}</td>
+                <td class="text-secondary text-right pe-2">{{ comision.ComisionTotalReal | number:'1.2-2' }}</td>
+                <td class="text-secondary text-right pe-2">{{ comision.GbaI | number:'1.2-2' }}</td>
+                <td class="text-secondary text-right pe-2">{{ comision.Comision | number:'1.2-2' }}</td>
+                <td class="text-secondary text-right pe-2">{{ comision.Fee | number:'1.2-2' }}</td>
+                <td class="text-secondary text-right pe-2">{{ comision.RecBanco | number:'1.2-2' }}</td>
+                <td class="text-secondary text-right pe-2">{{ comision.ComisionDistribuir | number:'1.2-2' }}</td>
+                <td class="text-secondary text-center"><button class="btn btn-warning btn-sm" (click)="revisarComision(fecha)">DETALLES / VENDEDORES</button></td>
+              </tr>
             </tbody>
           </table>
         </div>

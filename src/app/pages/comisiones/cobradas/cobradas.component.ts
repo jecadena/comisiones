@@ -48,6 +48,7 @@ export class CobradasComponent implements OnInit {
   filteredCount: number = 0;
   comisionForm: FormGroup;
   comision: any = {}; 
+  isSearchFiltering: boolean = false;
 
   errorLoadingComisiones: string = '';
 
@@ -268,6 +269,7 @@ export class CobradasComponent implements OnInit {
   buscarComisiones(searchText: string = this.busqueda, estado: string = this.estado, SignIn: string = this.SignIn) {
     if (searchText.trim() !== '') {
       this.busquedaActiva = true;
+      this.isSearchFiltering = true;
       this.filtrarPorAgenciaActiva = false;
       this.comisionesService.buscarComisionesFecha(searchText, estado, SignIn, this.fechaFacturacion).subscribe(
         data => {
@@ -281,9 +283,10 @@ export class CobradasComponent implements OnInit {
         }
       );
     } else {
+      this.isSearchFiltering = false;
       this.cargarTodosLosRegistros();
     }
-  }
+  }  
 
   calcularSumatoriasFiltradas() {
     this.sumatoriaFee = this.filteredComisionesList.reduce((total, comision) => total + comision.Fee, 0).toFixed(2);
@@ -328,17 +331,15 @@ export class CobradasComponent implements OnInit {
 
   toggleFilter() {
     this.isFiltering = !this.isFiltering;
-  
+    this.isSearchFiltering = false;
     if (this.isFiltering) {
       this.filteredComisionesList = this.comisionesList.filter(item => item.StatusComision === 'new');
     } else {
       this.filteredComisionesList = this.comisionesList;
     }
-  
     this.filteredCount = this.filteredComisionesList.length;
-  
     this.calcularSumatoriasFiltradas();
-  }
+  }  
   
   calcularSumatoriasFiltradas1() {
     this.sumatoriaFee = this.filteredComisionesList.reduce((total, comision) => total + comision.Fee, 0).toFixed(2);
@@ -349,8 +350,7 @@ export class CobradasComponent implements OnInit {
     this.sumatoriaTotalBancos = this.filteredComisionesList.reduce((total, comision) => total + comision.RecBanco, 0).toFixed(2);
     this.sumatoriaTotalDistribuidos = this.filteredComisionesList.reduce((total, comision) => total + comision.ComisionDistribuir, 0).toFixed(2);
   }
-  
-  
+
   calcularSumatorias() {
     this.sumatoriaFee = this.comisionesList.reduce((total, comision) => total + comision.Fee, 0).toFixed(2);
     this.sumatoriaComisionTotalReal = this.comisionesList.reduce((total, comision) => total + comision.ComisionTotalReal, 0).toFixed(2);
@@ -423,7 +423,6 @@ export class CobradasComponent implements OnInit {
   
     return formattedDate;
   }
-  
 
   regresar() {
     this.busqueda = '';
@@ -807,15 +806,22 @@ export class CobradasComponent implements OnInit {
 
 
   exportarExcelFiltrado(): void {
-    const comisionesParaExcel = this.isFiltering ? this.filteredComisionesList : this.comisionesList;
-  
+    let comisionesParaExcel;
+    let titulo;
+
+    if (this.isSearchFiltering) {
+      comisionesParaExcel = this.filteredComisionesList;
+      titulo = 'REPORTE FILTRADOS';
+    } else {
+      comisionesParaExcel = this.isFiltering ? this.filteredComisionesList : this.comisionesList;
+      titulo = this.isFiltering ? 'REPORTE NUEVOS REGISTROS' : 'REPORTE TODOS LOS REGISTROS';
+    }
+    //const comisionesParaExcel = this.isFiltering ? this.filteredComisionesList : this.comisionesList;
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Comisiones');
-  
-    const titulo = this.isFiltering ? 'REPORTE NUEVOS REGISTROS' : 'REPORTE TODOS LOS REGISTROS';
+    //const titulo = this.isFiltering ? 'REPORTE NUEVOS REGISTROS' : 'REPORTE TODOS LOS REGISTROS';
     worksheet.addRow([`${titulo}: ${this.fechaFacturacion}`]).font = { size: 16, bold: true };
     worksheet.addRow([]);
-  
     const headers = ['FECHA FACT.', 'CHECK IN', 'CHECK OUT', 'VENDEDOR', 'SIGN IN', 'AGENCIA', 'NOMBRE', 'APELLIDO', 'CIUDAD', 'HOTEL', 'CÓDIGO', 'AMADEUS', 'RECIBIDA', 'MONEDA', 'TARIFA', 'COMISION', 'RATEPLAN TOTAL PRICE', 'COMMISSION AMOUNT IN EURO', 'RECIBIDO EN BANCO', 'COMISION A DISTRIBUIR', 'TA SIGN'];
     const headerRow = worksheet.addRow(headers);
     headerRow.eachCell({ includeEmpty: true }, (cell) => {
@@ -830,7 +836,7 @@ export class CobradasComponent implements OnInit {
     worksheet.columns.forEach((column, i) => {
       column.width = headers[i].length < 12 ? 12 : headers[i].length;
     });
-  
+
     let sumatoriaRecBanco = 0;
     let totalComisionTotal = 0;
     let totalComisionOtraMoneda = 0;
@@ -864,7 +870,7 @@ export class CobradasComponent implements OnInit {
         comision.ComisionDistribuir,
         comision.SignIn
       ]);
-  
+
       row.eachCell((cell) => {
         cell.border = {
           top: { style: 'thin' },
@@ -873,7 +879,7 @@ export class CobradasComponent implements OnInit {
           right: { style: 'thin' },
         };
       });
-  
+
       totalComisionTotal += comision.ComisionTotal;
       totalComisionOtraMoneda += comision.ComisionTotalReal;
       sumatoriaTotalOtraMoneda += comision.TotalOtraMoneda;
@@ -882,10 +888,11 @@ export class CobradasComponent implements OnInit {
       totalGbaI += comision.GbaI || 0;
       totalGbaL += comision.GbaL || 0;
     });
-  
+
     worksheet.addRow([]);
     const totalRow = worksheet.addRow([
       'Total:',
+      '',
       '',
       '',
       '',
@@ -905,7 +912,7 @@ export class CobradasComponent implements OnInit {
       sumatoriaRecBanco.toFixed(2),
       sumatoriaComisionDistribuir.toFixed(2)
     ]);
-  
+
     totalRow.font = { bold: true };
     totalRow.eachCell({ includeEmpty: true }, (cell) => {
       cell.border = {
@@ -915,13 +922,13 @@ export class CobradasComponent implements OnInit {
         right: { style: 'thin' },
       };
     });
-  
+
     workbook.xlsx.writeBuffer().then(buffer => {
       const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       fs.saveAs(blob, `Reporte_${this.fechaFacturacion}.xlsx`);
     });
   }
-  
+
   filtrarVendedores() {
     this.vendedoresFiltrados = this.vendedoresUnicos.filter(v => v !== null && v !== '');
   }

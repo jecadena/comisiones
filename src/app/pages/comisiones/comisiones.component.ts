@@ -700,7 +700,7 @@ export class ComisionesComponent implements OnInit {
       if (result.isConfirmed) {
         const comisionesIds = this.selectedComisiones.map(comision => comision.id);
         const fechaFacturacion = this.selectedComisiones.length > 0 ? this.selectedComisiones[0].FechaFacturacion : null;
-        const url = 'http://localhost:3000/comisiones/cobrar';
+        const url = 'https://actoursapps.com.pe:3000/comisiones/cobrar';
   
         this.http.post(url, { ids: comisionesIds, fechaFacturacion: fechaFacturacion })
           .subscribe(() => {
