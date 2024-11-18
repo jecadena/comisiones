@@ -820,9 +820,9 @@ export class CobradasComponent implements OnInit {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Comisiones');
     //const titulo = this.isFiltering ? 'REPORTE NUEVOS REGISTROS' : 'REPORTE TODOS LOS REGISTROS';
-    worksheet.addRow([`${titulo}: ${this.fechaFacturacion}`]).font = { size: 16, bold: true };
+    worksheet.addRow([`${titulo}: ${this.formatDate(this.fechaFacturacion)}`]).font = { size: 16, bold: true };
     worksheet.addRow([]);
-    const headers = ['FECHA FACT.', 'CHECK IN', 'CHECK OUT', 'VENDEDOR', 'SIGN IN', 'AGENCIA', 'NOMBRE', 'APELLIDO', 'CIUDAD', 'HOTEL', 'CÓDIGO', 'AMADEUS', 'RECIBIDA', 'MONEDA', 'TARIFA', 'COMISION', 'RATEPLAN TOTAL PRICE', 'COMMISSION AMOUNT IN EURO', 'RECIBIDO EN BANCO', 'COMISION A DISTRIBUIR', 'TA SIGN'];
+    const headers = ['FECHA FACT.', 'CHECK IN', 'CHECK OUT', 'VENDEDOR', 'TA SIGN', 'AGENCIA', 'NOMBRE', 'APELLIDO', 'CIUDAD', 'HOTEL', 'CÓDIGO', 'AMADEUS', 'RECIBIDA', 'MONEDA', 'TARIFA', 'COMISION', 'RATEPLAN TOTAL PRICE', 'COMMISSION AMOUNT IN EURO', 'RECIBIDO EN BANCO', 'COMISION A DISTRIBUIR'];
     const headerRow = worksheet.addRow(headers);
     headerRow.eachCell({ includeEmpty: true }, (cell) => {
       cell.fill = {
@@ -868,7 +868,6 @@ export class CobradasComponent implements OnInit {
         comision.ComisionOtraMoneda,
         comision.RecBanco,
         comision.ComisionDistribuir,
-        comision.SignIn
       ]);
 
       row.eachCell((cell) => {
@@ -889,7 +888,8 @@ export class CobradasComponent implements OnInit {
       totalGbaL += comision.GbaL || 0;
     });
 
-    worksheet.addRow([]);
+    //worksheet.addRow([]);
+    
     const totalRow = worksheet.addRow([
       'Total:',
       '',
@@ -913,7 +913,16 @@ export class CobradasComponent implements OnInit {
       sumatoriaComisionDistribuir.toFixed(2)
     ]);
 
+    // Combinar las primeras 11 columnas en una sola celda
+    worksheet.mergeCells(`A${totalRow.number}:K${totalRow.number}`);
+
+    // Estilizar la celda combinada
+    const mergedCell = worksheet.getCell(`A${totalRow.number}`);
+    mergedCell.font = { bold: true };
+    mergedCell.alignment = { horizontal: 'right', vertical: 'middle' };
+
     totalRow.font = { bold: true };
+    totalRow.alignment = {horizontal: 'right', vertical: 'middle'};
     totalRow.eachCell({ includeEmpty: true }, (cell) => {
       cell.border = {
         top: { style: 'thin' },
