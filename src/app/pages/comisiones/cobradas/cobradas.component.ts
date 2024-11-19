@@ -97,7 +97,6 @@ export class CobradasComponent implements OnInit {
 
   public fechaFacturacion: string;
   public selectedHotels: Set<number> = new Set<number>();
-
   private searchSubject: Subject<string> = new Subject();
 
   constructor(
@@ -124,11 +123,9 @@ export class CobradasComponent implements OnInit {
     const userData = this.authService.getUserData();
     this.SignIn = userData.co_counter;
     this.estado = 'COB';
-
     this.comisionesService.getVendedoresDistintos(this.fechaFacturacion.substring(0, 10)).subscribe(data => {
       this.vendedoresUnicos = data;
     });
-
     this.comisionesService.comisiones$.subscribe(
       data => {
         this.comisionesList = data;
@@ -178,33 +175,11 @@ export class CobradasComponent implements OnInit {
     this.de_img = userData['de_img'];
     this.infoAdicional = userData['info_adicional'];
   }
-
-  /*loadComisionesCobradasList() {
-    const estado = "COB";
-    const fechaFacturacion = this.getFechaFacturacionFromUrl();
-  
-    if (this.SignIn) {
-      this.comisionesService.getComisionesListCob(this.SignIn, estado, fechaFacturacion).subscribe(
-        data => {
-          this.comisionesList = data;
-          console.log("Datos: ", this.comisionesList);
-          if (this.comisionesList.length > 0) {
-            this.updateComisionDetails(this.comisionesList[0]);
-          }
-        },
-        (error: HttpErrorResponse) => {
-          this.errorLoadingComisiones = 'Error al cargar la lista de comisiones: ' + error.message;
-          console.error('Error al obtener la lista de comisiones:', error);
-        }
-      );
-    }
-  }*/
   
   getFechaFacturacionFromUrl(): string | null {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('fechaFacturacion');
   }
-  
 
   private updateComisionDetails(elitem: any): void {
     this.id = elitem.id;
@@ -297,7 +272,6 @@ export class CobradasComponent implements OnInit {
     this.sumatoriaTotalBancos = this.filteredComisionesList.reduce((total, comision) => total + comision.RecBanco, 0).toFixed(2);
     this.sumatoriaTotalDistribuidos = this.filteredComisionesList.reduce((total, comision) => total + comision.ComisionDistribuir, 0).toFixed(2);
   }
-  
 
   // Método para cargar todos los registros
   cargarTodosLosRegistros() {
@@ -327,7 +301,6 @@ export class CobradasComponent implements OnInit {
       hotel.selected = this.selectedHotels.has(hotel.id); // Marca como seleccionado si está en la lista
     });
   }
-  
 
   toggleFilter() {
     this.isFiltering = !this.isFiltering;
@@ -412,15 +385,12 @@ export class CobradasComponent implements OnInit {
 
   formatDate(dateString: string): string {
     const date = new Date(dateString);
-    
     const localDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-  
     const formattedDate = localDate.toLocaleDateString('es-PE', {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit'
     });
-  
     return formattedDate;
   }
 
@@ -452,7 +422,6 @@ export class CobradasComponent implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
-
     Swal.fire({
       title: '¿Estás seguro?',
       text: 'Va a generar su recibo.',
@@ -484,17 +453,13 @@ export class CobradasComponent implements OnInit {
     console.log("FECHA: ", lafecha);
     this.comisionesService.getCountCobradasFecha(this.SignIn, lafecha)
       .subscribe(count => this.countCobradas = count);
-
     this.comisionesService.getVendedoresDistintos(lafecha).subscribe(data => {
       this.vendedoresUnicos = data;
     });
-
     this.comisionesService.getCountAnuladas(this.SignIn)
       .subscribe(count => this.countAnuladas = count);
-
     this.comisionesService.getCountPendientes(this.SignIn)
       .subscribe(count => this.countPendientes = count);
-
     this.comisionesService.getCountRecibos(this.SignIn)
       .subscribe(count => this.countRecibos = count);
   }
@@ -598,6 +563,7 @@ export class CobradasComponent implements OnInit {
       return null;
     }
   }
+
   calcularSumaTotal(): void {
     this.sumaTotal = this.comisionesList.reduce((total, comision) => total + comision.sumaParcial, 0);
   }
@@ -677,28 +643,44 @@ export class CobradasComponent implements OnInit {
       const comisionesParaExcel = data;
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('Comisiones');
-  
+      
+      // Agregar título
       worksheet.addRow([`REPORTE POR VENDEDOR: ${this.selectedVendedor}`]).font = { size: 16, bold: true };
+  
+      // Agregar fila en blanco antes de la imagen
       worksheet.addRow([]);
   
+      // Insertar imagen
+      const imageId = workbook.addImage({
+        base64: this.getBase64Image('http://192.168.1.105:4200/assets/images/logos/logoach.png'),
+        extension: 'png',
+      });
+      worksheet.addImage(imageId, {
+        tl: { col: 0, row: 2 }, // Posición inicial (columna 0, fila 2)
+        ext: { width: 200, height: 55 }, // Tamaño de la imagen
+      });
+  
+      // Agregar otra fila vacía después de la imagen
+      worksheet.addRow([]);
+  
+      // Crear encabezados
       const headers = ['FECHA FACT.', 'CHECK IN', 'CHECK OUT', 'AGENCIA', 'NOMBRE', 'APELLIDO', 'CIUDAD', 'HOTEL', 'CÓDIGO', 'AMADEUS', 'RECIBIDA', 'MONEDA', 'TARIFA', 'COMISION', 'RATEPLAN TOTAL PRICE', 'COMMISSION AMOUNT IN EURO', 'RECIBIDO EN BANCO', 'COMISION A DISTRIBUIR', 'TA SIGN'];
       const headerRow = worksheet.addRow(headers);
-
-      // Aplicar color y centrado en los encabezados
+  
+      // Formato de encabezados
       headerRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
         cell.fill = {
           type: 'pattern',
           pattern: 'solid',
-          fgColor: { argb: '0000FF' }
+          fgColor: { argb: '0000FF' },
         };
         cell.font = { color: { argb: 'FFFFFF' }, bold: true };
-
-        // Centrando el encabezado 'AGENCIA' (columna 4)
         if (colNumber === 4) {
           cell.alignment = { vertical: 'middle', horizontal: 'center' };
         }
       });
-
+  
+      // Ajustar ancho de columnas
       worksheet.columns.forEach((column, i) => {
         column.width = headers[i].length < 12 ? 12 : headers[i].length;
       });
@@ -707,13 +689,7 @@ export class CobradasComponent implements OnInit {
       let totalComisionTotal = 0;
       let totalComisionOtraMoneda = 0;
       let sumatoriaDistribuir = 0;
-      let sumatoriaCommissionAmountInEuro = 0;
-      let sumatoriaRateplanTotalPrice = 0;
-      let totalGbaI = 0;
-      let totalGbaL = 0;
-      let totalToFacturar = 0;
   
-      // Usar la variable local `comisionesParaExcel` en lugar de `this.filteredComisionesList`
       comisionesParaExcel.forEach(comision => {
         const row = worksheet.addRow([
           this.formatDate(this.fechaFacturacion),
@@ -734,10 +710,8 @@ export class CobradasComponent implements OnInit {
           comision.ComisionOtraMoneda,
           comision.RecBanco,
           comision.ComisionDistribuir,
-          comision.SignIn
+          comision.SignIn,
         ]);
-  
-        // Establecer bordes
         row.eachCell((cell) => {
           cell.border = {
             top: { style: 'thin' },
@@ -746,47 +720,11 @@ export class CobradasComponent implements OnInit {
             right: { style: 'thin' },
           };
         });
-
-        // Aplicar centrado y color de fondo amarillo en 'AgencyName' (columna 4)
-        row.getCell(4).alignment = { vertical: 'middle', horizontal: 'center' };  // Centrando
-        row.getCell(4).fill = {  // Fondo amarillo
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: 'FFFF00' }
-        };
-  
-        totalComisionTotal += comision.ComisionTotal;
-        totalComisionOtraMoneda += comision.ComisionOtraMoneda;
-        sumatoriaRecBanco += comision.RecBanco;
-        sumatoriaDistribuir += comision.ComisionDistribuir;
-        sumatoriaRateplanTotalPrice += comision.RateplanTotalPrice;
-        totalGbaI += comision.GbaI || 0;
-        totalGbaL += comision.GbaL || 0;
       });
   
-      // Add total row
+      // Agregar fila total
       worksheet.addRow([]);
-      const totalRow = worksheet.addRow([
-        'Total:',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        totalComisionTotal.toFixed(2),
-        totalComisionOtraMoneda.toFixed(2),
-        '',
-        '',
-        '',
-        '',
-        '',
-        sumatoriaRecBanco.toFixed(2),
-        sumatoriaDistribuir.toFixed(2),
-        '',
-      ]);
-
+      const totalRow = worksheet.addRow(['Total:', '', '', '', '', '', '', '', totalComisionTotal.toFixed(2), totalComisionOtraMoneda.toFixed(2), '', '', '', '', '', sumatoriaRecBanco.toFixed(2), sumatoriaDistribuir.toFixed(2), '']);
       totalRow.font = { bold: true };
       totalRow.eachCell({ includeEmpty: true }, (cell) => {
         cell.border = {
@@ -796,19 +734,26 @@ export class CobradasComponent implements OnInit {
           right: { style: 'thin' },
         };
       });
-
+  
+      // Guardar archivo
       workbook.xlsx.writeBuffer().then(buffer => {
         const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         fs.saveAs(blob, `Reporte_${this.selectedVendedor}.xlsx`);
       });
     });
   }
-
+  
+  // Método auxiliar para convertir imagen a base64
+  getBase64Image(imgUrl: string): string {
+    // Puedes usar una librería para realizar esta conversión o un servicio que devuelva la imagen en base64.
+    // Este es un ejemplo de cómo manejarlo si la imagen ya está en formato base64.
+    return 'BASE64_DE_LA_IMAGEN';
+  }
+  
 
   exportarExcelFiltrado(): void {
     let comisionesParaExcel;
     let titulo;
-
     if (this.isSearchFiltering) {
       comisionesParaExcel = this.filteredComisionesList;
       titulo = 'REPORTE FILTRADOS';
@@ -832,20 +777,18 @@ export class CobradasComponent implements OnInit {
       };
       cell.font = { color: { argb: 'FFFFFF' }, bold: true };
     });
-
     worksheet.columns.forEach((column, i) => {
       column.width = headers[i].length < 12 ? 12 : headers[i].length;
     });
-
     let sumatoriaRecBanco = 0;
     let totalComisionTotal = 0;
     let totalComisionOtraMoneda = 0;
     let sumatoriaTotalOtraMoneda = 0;
     let sumatoriaComisionDistribuir = 0;
+    let totalComisionAmountInEuro = 0;
     let sumatoriaRateplanTotalPrice = 0;
     let totalGbaI = 0;
     let totalGbaL = 0;
-  
     comisionesParaExcel.forEach(comision => {
       const row = worksheet.addRow([
         this.formatDate(this.fechaFacturacion),
@@ -869,7 +812,6 @@ export class CobradasComponent implements OnInit {
         comision.RecBanco,
         comision.ComisionDistribuir,
       ]);
-
       row.eachCell((cell) => {
         cell.border = {
           top: { style: 'thin' },
@@ -878,18 +820,16 @@ export class CobradasComponent implements OnInit {
           right: { style: 'thin' },
         };
       });
-
       totalComisionTotal += comision.ComisionTotal;
       totalComisionOtraMoneda += comision.ComisionTotalReal;
       sumatoriaTotalOtraMoneda += comision.TotalOtraMoneda;
+      totalComisionAmountInEuro += comision.CommissionAmountInEuro;
       sumatoriaRecBanco += comision.RecBanco;
       sumatoriaComisionDistribuir += comision.ComisionDistribuir;
       totalGbaI += comision.GbaI || 0;
       totalGbaL += comision.GbaL || 0;
     });
-
     //worksheet.addRow([]);
-    
     const totalRow = worksheet.addRow([
       'Total:',
       '',
@@ -906,21 +846,18 @@ export class CobradasComponent implements OnInit {
       totalComisionOtraMoneda.toFixed(2),
       '',
       '',
-      '',
+      totalComisionAmountInEuro.toFixed(2),
       '',
       '',
       sumatoriaRecBanco.toFixed(2),
       sumatoriaComisionDistribuir.toFixed(2)
     ]);
-
     // Combinar las primeras 11 columnas en una sola celda
     worksheet.mergeCells(`A${totalRow.number}:K${totalRow.number}`);
-
     // Estilizar la celda combinada
     const mergedCell = worksheet.getCell(`A${totalRow.number}`);
     mergedCell.font = { bold: true };
     mergedCell.alignment = { horizontal: 'right', vertical: 'middle' };
-
     totalRow.font = { bold: true };
     totalRow.alignment = {horizontal: 'right', vertical: 'middle'};
     totalRow.eachCell({ includeEmpty: true }, (cell) => {
@@ -930,8 +867,13 @@ export class CobradasComponent implements OnInit {
         bottom: { style: 'thin' },
         right: { style: 'thin' },
       };
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'ebebeb' }
+      };
+      cell.font = { color: { argb: '000000' }, bold: true };
     });
-
     workbook.xlsx.writeBuffer().then(buffer => {
       const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       fs.saveAs(blob, `Reporte_${this.fechaFacturacion}.xlsx`);
