@@ -8,8 +8,9 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 @Component({
-  selector: 'app-recibos',
-  templateUrl: './recibos.component.html'
+    selector: 'app-recibos',
+    templateUrl: './recibos.component.html',
+    standalone: false
 })
 export class RecibosComponent implements OnInit {
 

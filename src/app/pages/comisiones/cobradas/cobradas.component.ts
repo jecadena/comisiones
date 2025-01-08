@@ -11,9 +11,10 @@ import * as ExcelJS from 'exceljs';
 import * as fs from 'file-saver';
 
 @Component({
-  selector: 'app-cobradas',
-  templateUrl: './cobradas.component.html',
-  styleUrls: ['./cobradas.component.scss']
+    selector: 'app-cobradas',
+    templateUrl: './cobradas.component.html',
+    styleUrls: ['./cobradas.component.scss'],
+    standalone: false
 })
 export class CobradasComponent implements OnInit {
   usuarioDatos: any;

@@ -11,9 +11,10 @@ interface Columna {
 }
 
 @Component({
-  selector: 'app-pagina-tareas',
-  templateUrl: './pagina-tareas.component.html',
-  styleUrls: ['./pagina-tareas.component.scss']
+    selector: 'app-pagina-tareas',
+    templateUrl: './pagina-tareas.component.html',
+    styleUrls: ['./pagina-tareas.component.scss'],
+    standalone: false
 })
 export class PaginaTareasComponent {
   columnas: Columna[] = [

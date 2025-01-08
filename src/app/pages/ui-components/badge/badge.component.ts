@@ -118,8 +118,9 @@ const ELEMENT_DATA: productsData[] = [
 ];
 
 @Component({
-  selector: 'app-badge',
-  templateUrl: './badge.component.html'
+    selector: 'app-badge',
+    templateUrl: './badge.component.html',
+    standalone: false
 })
 export class AppBadgeComponent implements OnInit {
 

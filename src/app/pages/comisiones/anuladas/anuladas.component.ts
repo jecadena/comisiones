@@ -8,8 +8,9 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 @Component({
-  selector: 'app-anuladas',
-  templateUrl: './anuladas.component.html'
+    selector: 'app-anuladas',
+    templateUrl: './anuladas.component.html',
+    standalone: false
 })
 export class AnuladasComponent implements OnInit {
   usuarioDatos: any;

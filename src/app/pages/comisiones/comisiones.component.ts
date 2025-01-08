@@ -24,9 +24,10 @@ interface Comision {
 }
 
 @Component({
-  selector: 'app-comisiones',
-  templateUrl: './comisiones.component.html',
-  styleUrls: ['./comisiones.component.scss']
+    selector: 'app-comisiones',
+    templateUrl: './comisiones.component.html',
+    styleUrls: ['./comisiones.component.scss'],
+    standalone: false
 })
 export class ComisionesComponent implements OnInit {
   SignIn: string = '';
@@ -565,7 +566,7 @@ export class ComisionesComponent implements OnInit {
       position: 'top-end',
       showConfirmButton: false,
       didOpen: () => {
-        Swal.showLoading();
+        Swal.showLoading(null);
       }
     });
   }

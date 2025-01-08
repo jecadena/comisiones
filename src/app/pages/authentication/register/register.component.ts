@@ -3,8 +3,9 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-register',
-  templateUrl: './register.component.html',
+    selector: 'app-register',
+    templateUrl: './register.component.html',
+    standalone: false
 })
 export class AppSideRegisterComponent {
   constructor(private router: Router) {}

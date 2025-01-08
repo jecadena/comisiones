@@ -8,8 +8,9 @@ import Swal from 'sweetalert2';
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
-  selector: 'app-nuevacomision',
-  templateUrl: './nuevacomision.component.html'
+    selector: 'app-nuevacomision',
+    templateUrl: './nuevacomision.component.html',
+    standalone: false
 })
 export class NuevacomisionComponent implements OnInit {
   usuarioDatos: any;

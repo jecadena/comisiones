@@ -107,9 +107,10 @@ interface UserData {
 
 
 @Component({
-  selector: 'app-header',
-  templateUrl: './header.component.html',
-  encapsulation: ViewEncapsulation.None,
+    selector: 'app-header',
+    templateUrl: './header.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class HeaderComponent implements OnInit {
   @Input() showToggle = true;

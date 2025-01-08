@@ -5,9 +5,10 @@ import Swal from 'sweetalert2';
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
-  selector: 'app-cargar-excel',
-  templateUrl: './cargar-excel.component.html',
-  styleUrls: ['./cargar-excel.component.scss']
+    selector: 'app-cargar-excel',
+    templateUrl: './cargar-excel.component.html',
+    styleUrls: ['./cargar-excel.component.scss'],
+    standalone: false
 })
 
 export class CargarExcelComponent implements OnInit{
@@ -161,7 +162,7 @@ export class CargarExcelComponent implements OnInit{
       position: 'top-end',
       showConfirmButton: false,
       didOpen: () => {
-        Swal.showLoading();
+        Swal.showLoading(null);
         this.updateProgressBar(0);
       },
       didClose: () => {

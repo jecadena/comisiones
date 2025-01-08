@@ -36,8 +36,9 @@ interface TipoCambio {
 }
 
 @Component({
-  selector: 'app-detalle-recibo',
-  templateUrl: './detalle-recibo.component.html'
+    selector: 'app-detalle-recibo',
+    templateUrl: './detalle-recibo.component.html',
+    standalone: false
 })
 export class DetalleReciboComponent implements OnInit {
   id: string;

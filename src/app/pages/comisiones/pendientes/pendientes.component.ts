@@ -10,9 +10,10 @@ import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
 
 @Component({
-  selector: 'app-pendientes',
-  templateUrl: './pendientes.component.html',
-  styleUrls: ['./pendientes.component.scss']
+    selector: 'app-pendientes',
+    templateUrl: './pendientes.component.html',
+    styleUrls: ['./pendientes.component.scss'],
+    standalone: false
 })
 export class PendientesComponent implements OnInit {
   usuarioDatos: any;

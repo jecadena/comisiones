@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-file-reader',
-  templateUrl: './file-reader.component.html',
-  styleUrls: ['./file-reader.component.scss']
+    selector: 'app-file-reader',
+    templateUrl: './file-reader.component.html',
+    styleUrls: ['./file-reader.component.scss'],
+    standalone: false
 })
 export class FileReaderComponent {
   selectedFiles: FileList | null = null;

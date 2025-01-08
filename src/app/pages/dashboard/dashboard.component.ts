@@ -10,8 +10,9 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html'
+    selector: 'app-dashboard',
+    templateUrl: './dashboard.component.html',
+    standalone: false
 })
 export class AppDashboardComponent implements OnInit {
   Math = Math;

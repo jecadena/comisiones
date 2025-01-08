@@ -13,10 +13,11 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
-  selector: 'app-confirmadas',
-  templateUrl: './confirmadas.component.html',
-  styleUrls: ['./confirmadas.component.scss'],
-  providers: [DatePipe]
+    selector: 'app-confirmadas',
+    templateUrl: './confirmadas.component.html',
+    styleUrls: ['./confirmadas.component.scss'],
+    providers: [DatePipe],
+    standalone: false
 })
 
 export class ConfirmadasComponent implements OnInit {
@@ -187,7 +188,7 @@ export class ConfirmadasComponent implements OnInit {
             position: 'top-end',
             showConfirmButton: false,
             didOpen: () => {
-                Swal.showLoading();
+                Swal.showLoading(null);
                 updateProgressBar(0);
             }
         });

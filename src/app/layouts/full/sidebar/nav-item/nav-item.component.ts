@@ -4,9 +4,10 @@ import { Router } from '@angular/router';
 import { NavService } from '../../../../services/nav.service';
 
 @Component({
-  selector: 'app-nav-item',
-  templateUrl: './nav-item.component.html',
-  styleUrls: [],
+    selector: 'app-nav-item',
+    templateUrl: './nav-item.component.html',
+    styleUrls: [],
+    standalone: false
 })
 export class AppNavItemComponent implements OnChanges {
   @Input() item: NavItem | any;

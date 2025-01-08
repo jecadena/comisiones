@@ -44,8 +44,9 @@ interface Hotel {
 }
 
 @Component({
-  selector: 'app-detalle-comision',
-  templateUrl: './detalle-comision.component.html'
+    selector: 'app-detalle-comision',
+    templateUrl: './detalle-comision.component.html',
+    standalone: false
 })
 export class DetalleComisionComponent implements OnInit, OnChanges {
   comisionForm: FormGroup;
