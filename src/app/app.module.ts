@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
@@ -41,47 +41,41 @@ import { CommonModule } from '@angular/common';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CargarExcelComponent } from './pages/comisiones/cargar-excel/cargar-excel.component';
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    FullComponent,
-    BlankComponent,
-    SidebarComponent,
-    HeaderComponent,
-    BrandingComponent,
-    AppNavItemComponent,
-    ComisionesComponent,
-    NuevacomisionComponent,
-    FileReaderComponent,
-    CobradasComponent,
-    AnuladasComponent,
-    PendientesComponent,
-    PaginaTareasComponent,
-    DetalleComisionComponent,
-    CargarExcelComponent
-  ],
-  imports: [
-    BrowserModule,
-    ToastrModule.forRoot({
-      timeOut: 3000,
-      positionClass: 'toast-top-right',
-      preventDuplicates: true,
-    }),
-    AppRoutingModule,
-    HttpClientModule,
-    BrowserAnimationsModule,
-    FormsModule,
-    RouterModule,
-    ReactiveFormsModule,
-    MaterialModule,
-    TablerIconsModule.pick(TablerIcons),
-    CommonModule,
-    DragDropModule,
-    MatPaginatorModule,
-    MatTableModule,
-    MatBadgeModule
-  ],
-  exports: [TablerIconsModule],
-  bootstrap: [AppComponent],
-})
+@NgModule({ declarations: [
+        AppComponent,
+        FullComponent,
+        BlankComponent,
+        SidebarComponent,
+        HeaderComponent,
+        BrandingComponent,
+        AppNavItemComponent,
+        ComisionesComponent,
+        NuevacomisionComponent,
+        FileReaderComponent,
+        CobradasComponent,
+        AnuladasComponent,
+        PendientesComponent,
+        PaginaTareasComponent,
+        DetalleComisionComponent,
+        CargarExcelComponent
+    ],
+    exports: [TablerIconsModule],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        ToastrModule.forRoot({
+            timeOut: 3000,
+            positionClass: 'toast-top-right',
+            preventDuplicates: true,
+        }),
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        FormsModule,
+        RouterModule,
+        ReactiveFormsModule,
+        MaterialModule,
+        TablerIconsModule.pick(TablerIcons),
+        CommonModule,
+        DragDropModule,
+        MatPaginatorModule,
+        MatTableModule,
+        MatBadgeModule], providers: [provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule {}
