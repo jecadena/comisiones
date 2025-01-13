@@ -136,23 +136,61 @@ export class PendientesComponent implements OnInit {
   }
 
   loadComisionesPendientesList() {
-    const estado = "PEN";
-    //if (this.SignIn) {
-      this.comisionesService.getComisionesList(this.SignIn, estado).subscribe(
-        (data: any[]) => {
-          this.comisionesList = data;
-          console.log("DATOS INICIALES: ",this.comisionesList);
-          this.sumaTotal = this.comisionesList.reduce((acc, hotel) => acc + hotel.ComisionTotal, 0);
-          this.totalPages = Math.ceil(this.comisionesList.length / this.itemsPerPage);
-          this.paginateComisionesList();
-        },
-        (error: HttpErrorResponse) => {
-          this.errorLoadingComisiones = 'Error al cargar la lista de comisiones: ' + error.message;
-          console.error('Error al obtener la lista de comisiones:', error);
-        }
-      );
-    //}
+    const estadoPen = "PEN";
+    const estadoCon = "CON";
+  
+    // Variables para almacenar los datos temporalmente
+    let penComisiones: any[] = [];
+    let conComisiones: any[] = [];
+  
+    // Obtener registros con estado = "PEN"
+    this.comisionesService.getComisionesList(this.SignIn, estadoPen).subscribe(
+      (dataPen: any[]) => {
+        penComisiones = dataPen;
+  
+        // Obtener registros con estado = "CON"
+        this.comisionesService.getComisionesList(this.SignIn, estadoCon).subscribe(
+          (dataCon: any[]) => {
+            conComisiones = dataCon;
+  
+            // Filtrar registros finales
+            this.comisionesList = this.filterNonRepeatedPenRecords(penComisiones);
+  
+            // Procesar datos
+            console.log("DATOS FILTRADOS FINALES:", this.comisionesList);
+            this.sumaTotal = this.comisionesList.reduce((acc, item) => acc + item.ComisionTotal, 0);
+            this.totalPages = Math.ceil(this.comisionesList.length / this.itemsPerPage);
+            this.paginateComisionesList();
+          },
+          (error: HttpErrorResponse) => {
+            this.errorLoadingComisiones = 'Error al cargar la lista de comisiones (CON): ' + error.message;
+            console.error('Error al obtener la lista de comisiones (CON):', error);
+          }
+        );
+      },
+      (error: HttpErrorResponse) => {
+        this.errorLoadingComisiones = 'Error al cargar la lista de comisiones (PEN): ' + error.message;
+        console.error('Error al obtener la lista de comisiones (PEN):', error);
+      }
+    );
   }
+  
+  // Método para filtrar registros únicos que no se repiten en ConfirmationCode
+  filterNonRepeatedPenRecords(penComisiones: any[]): any[] {
+    const confirmationCodeCount = new Map<string, number>();
+  
+    // Contar la frecuencia de cada ConfirmationCode
+    penComisiones.forEach((comision) => {
+      const code = comision.ConfirmationCode;
+      confirmationCodeCount.set(code, (confirmationCodeCount.get(code) || 0) + 1);
+    });
+  
+    // Filtrar los registros cuya ConfirmationCode aparece exactamente una vez
+    return penComisiones.filter(
+      (comision) => confirmationCodeCount.get(comision.ConfirmationCode) === 1
+    );
+  }
+  
 
   paginateComisionesList() {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;

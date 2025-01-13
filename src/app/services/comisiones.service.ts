@@ -109,7 +109,7 @@ export class ComisionesService {
   }
 
   obtenerTodosLosRegistros1(SignIn: string, estado: string, fechaFacturacion: string): Observable<any[]> {
-    console.log("Fecha en Servicio: ",fechaFacturacion);
+    console.log("Fecha en Servicio1: ",fechaFacturacion);
     if (['CON', 'COB', 'PEN', 'REC'].includes(estado)) {
       return this.getComisionesListCob(SignIn, estado, fechaFacturacion);
     } else {

@@ -54,6 +54,10 @@ export class ConfirmadasComponent implements OnInit {
   SignIn: string = '';
   comisionesListFiltrada: any[] = [];
 
+  selectedYear: string = '2025'; 
+  availableYears: string[] = ['2024', '2025']; 
+  fechasFiltradas: string[] = []; 
+
   nombreUsuario: string = '';
   dePatSolicitante: string = '';
   de_img: string = '';
@@ -107,13 +111,16 @@ export class ConfirmadasComponent implements OnInit {
         this.fechasFacturacion.forEach(fecha => {
           this.cargarComisionesPorFecha(fecha);
         });
+  
+        // Filtrar fechas por el año por defecto (2025)
+        this.filtrarFechasPorAnio();
       },
       (error: HttpErrorResponse) => {
         this.errorLoadingComisiones = 'Error al cargar las fechas de facturación: ' + error.message;
         console.error('Error al cargar las fechas de facturación:', error);
       }
     );
-  }
+  }  
 
   cargarComisionesPorFecha(fechaFacturacion: string) {
     const fechaFactura = fechaFacturacion.slice(0, 10);
@@ -126,6 +133,10 @@ export class ConfirmadasComponent implements OnInit {
       }
     );
   }
+
+  filtrarFechasPorAnio(): void {
+    this.fechasFiltradas = this.fechasFacturacion.filter(fecha => fecha.startsWith(this.selectedYear));
+  }  
 
   revisarComision(fechaFacturacion: string) {
     this.router.navigate(['/comisiones/cobradas'], {

@@ -22,6 +22,12 @@
             },
             "index": "src/index.html",
             "polyfills": ["zone.js"],
+            "allowedCommonJsDependencies": [
+              "sweetalert2",
+              "exceljs",
+              "file-saver",
+              "html2canvas"
+            ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": ["src/favicon.ico", "src/assets"],

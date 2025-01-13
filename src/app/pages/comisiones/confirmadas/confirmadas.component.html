@@ -49,8 +49,13 @@
     <!-- Mostrar las fechas de facturación solo cuando comisionesList esté vacío -->
     <div *ngIf="comisionesList.length === 0" >
       <div class="row fila" *ngIf="fechasFacturacion.length > 0 && !errorLoadingComisiones">
-        <div class="col-md-6"><h5 class="text-info">COMISIONES EN PROCESO DE COBRANZA</h5></div>
-        <div class="col-md-6 text-right">
+        <div class="col-md-5"><h5 class="text-info">COMISIONES EN PROCESO DE COBRANZA</h5></div>
+        <div class="col-md-2">
+          <select id="yearSelect" [(ngModel)]="selectedYear" (change)="filtrarFechasPorAnio()" class="form-control form-control-sm mb-2 text-primary " style="width:60px;font-weight:600;">
+            <option *ngFor="let year of availableYears" [value]="year">{{ year }}</option>
+          </select>
+        </div>
+        <div class="col-md-5 text-right">
           <button class="btn btn-sm btn-danger" *ngIf="isAnyCheckboxChecked" (click)="eliminarComisionesSeleccionadas()">
             <i class="fa-solid fa-trash-can pe-2"></i> ELIMINAR COMISIONES
           </button>
@@ -79,7 +84,7 @@
                 <th class="text-center" style="width: 16%;">ACCIÓN</th>
               </tr>
             </thead>
-            <tbody *ngFor="let fecha of fechasFacturacion">
+            <tbody *ngFor="let fecha of fechasFiltradas">
               <tr *ngFor="let comision of comisionesPorFecha[fecha]">
                 <td *ngIf="isAdmin">
                   <input type="checkbox" [(ngModel)]="comision.selected" (change)="onCheckboxChange()">
@@ -96,7 +101,9 @@
                 <td class="text-secondary text-right pe-2">{{ comision.Fee | number:'1.2-2' }}</td>
                 <td class="text-secondary text-right pe-2">{{ comision.RecBanco | number:'1.2-2' }}</td>
                 <td class="text-secondary text-right pe-2">{{ comision.ComisionDistribuir | number:'1.2-2' }}</td>
-                <td class="text-secondary text-center"><button class="btn btn-warning btn-sm" (click)="revisarComision(fecha)">DETALLES / VENDEDORES</button></td>
+                <td class="text-secondary text-center">
+                  <button class="btn btn-warning btn-sm" (click)="revisarComision(fecha)">DETALLES / VENDEDORES</button>
+                </td>
               </tr>
             </tbody>
           </table>
